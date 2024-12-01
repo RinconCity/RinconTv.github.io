@@ -1,0 +1,116 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* outline: red dotted 1px; */
+}
+
+
+body{
+
+background-color: black;
+}
+
+.menu{
+    width: 100%;
+    max-width: 370px;
+    height: 100%;
+    margin: 50px auto 80px;
+}
+.menuson{
+    
+}
+
+.gridplace{
+    width: 95%;
+    height: 100%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    grid-auto-rows: 200px;
+    column-gap: 10px;
+    row-gap: 10px;
+}
+.card{
+   /* width: 100%;  */
+   /* height: 285px; */
+   text-align: center;
+   background-color: white;
+   box-shadow: 0px 0px 6px 0px white;
+   border-radius: 10px;
+}
+img{
+    width: 100%;
+    height: 75%;
+    border-radius: 10px 10px 0px 0px;
+}
+.detalles{
+    font-size: .6rem;
+    
+}
+
+.filtro{
+    display: none;
+}
+/* CHAT */
+.info-chat{
+    background-color: black;   
+    padding: 10px 15px;
+    border-radius: 30px;
+    border: 1px solid white;
+    position: fixed;
+    right: 10px;
+    left: 10px;
+    bottom: 10px;
+}
+
+.contacta{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+/* ICINOS */
+.what-img{
+    display: block;
+    width: 35px;
+    height: 35px;
+}
+.btn-ico{
+    display: block;
+    width: 35px;
+    height: 35px;
+}
+.call{
+    display: block;
+    width: 35px;
+    height: 35px;
+}
+.chat , .callme{
+    display: block;
+    width: max-content;
+}
+.title{
+    background-color: black;
+    color: gold;
+    padding: 10px 0px;
+    text-align: center;
+    margin-bottom: 5px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    box-shadow: 0px 0px 20px 0px white;
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+}
+#buscador{
+    width: 65%;
+    height: 40px;
+    border-radius: 30px;
+    padding-left: 10px;
+}
+.extra{
+    display: none;
+}
+
+

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	
+	<link href="gif/style.css" rel="stylesheet" type="text/css" />
+	
+	<script src="gif/jquery-3.1.1.min.js"></script>	
+	<script src="gif/smoothscroll.js" type="text/javascript"></script>
+	<script src="gif/strings.js" type="text/javascript"></script>
+	<script src="gif/myscript.js" type="text/javascript"></script>
+		
+	<script type="text/javascript">
+
+		var visID = 'leer'; //recent Container
+		var VidNr = -1; //No of the recent random movie, -1 for all movies
+		var movielist;
+		var newmovielist;
+		var Anz = 0;
+		
+		$( document ).ready(function() {
+
+			if (document.getElementById('allmovies')){
+				var movies = document.getElementById('allmovies');		
+				movielist = movies.getElementsByTagName('li');						
+			}
+			if (document.getElementById('latest-additions')){ 
+				var newmovies = document.getElementById('latest-additions');		
+				newmovielist = newmovies.getElementsByTagName('li');	
+			}
+
+			if (document.getElementById('latest-additions')){ 
+				zeige ('neu');
+				visID = 'latest-additions'
+			}	
+			else { //if there is no div 'latest-additions' show all
+				zeige ('alle');
+				visID = 'allmovies';				
+			}	
+		});	
+		
+		function zeige(id) {	
+			
+			if(document.getElementById) {
+
+				//only show Genre-Menu
+				if (id == 'genrenav'){ 
+					if (document.getElementById('genrenav').style.display == 'block')
+						document.getElementById('genrenav').style.display = 'none';
+					else
+						document.getElementById('genrenav').style.display = 'block';
+				} else
+					document.getElementById('genrenav').style.display = 'none';
+
+				//only show Year-Menu
+				if (id == 'yearnav'){ 
+					if (document.getElementById('yearnav').style.display == 'block')
+						document.getElementById('yearnav').style.display = 'none';
+					else
+						document.getElementById('yearnav').style.display = 'block';
+				} else
+					document.getElementById('yearnav').style.display = 'none';
+				
+				//show newest movies
+				if (id == 'neu'){ 
+					if ((document.getElementById('searchString').value > '') || (VidNr > -1)){ //if there is a filter - remove
+						document.getElementById('searchString').value = '';
+						if (document.getElementById('allmovies'))
+							Suche('*', movielist)
+						else
+							Suche('*', newmovielist);							
+						VidNr = -1; //reset random movie
+					}	
+					Anz = newmovielist.length;	
+					if (document.getElementById('latest-additions'))
+						changeDiv('latest-additions');
+				}	
+
+				//show all movies
+				else if (id == 'alle'){ 
+					if ((document.getElementById('searchString').value > '') || (VidNr > -1)){ //if there is a filter - remove
+					document.getElementById('searchString').value = '';
+						VidNr = -1; //reset random movie
+						Suche('*', movielist);											
+					}	
+					Anz = movielist.length;	
+					if (document.getElementById('allmovies'))
+						changeDiv('allmovies');
+				}
+				
+				//activate the filter
+				else if (id == 'suche'){ 
+					if (document.getElementById('allmovies')){
+						Anz = Suche(document.getElementById('searchString').value.toLowerCase(), movielist); // read search string and start search
+						changeDiv('allmovies')
+					}	
+					else { 	
+						Anz = Suche(document.getElementById('searchString').value.toLowerCase(), newmovielist); // read search string and start search				
+						changeDiv('latest-additions')					
+					}	
+				}
+				
+				//show random movie
+				else if (id == 'zufall'){ 
+					document.getElementById('searchString').value = '';
+					if (document.getElementById('allmovies')){
+						Zufallsfilm(movielist);
+						changeDiv('allmovies')
+					}	
+					else { 	
+						Zufallsfilm(newmovielist); 
+						changeDiv('latest-additions'); 					
+					}					
+					document.getElementById('headline').innerHTML  = strZufallsfilm;	
+					Anz = 1;
+				}
+
+			}	
+		}	
+
+	</script>		
+
+<title>EMDB</title>
+</head>
+
+<body>
+
+
+	<div id="wrapper">
+		<main class="shadow"> 
+
+<!-- Header ------------------------------------------------------------------>
+			<header>
+				<div id="info">
+					<i>&#218;ltima actualizaci&#243;n:</i> <b>21/11/2024</b> &nbsp;&nbsp;&diams;&nbsp;&nbsp; <i>Cantidad de pel&#237;culas:</i> <b>401</b>
+				</div>
+				<h1>Eric's Movie Database</h1>
+				<hr>	
+			</header>
+<!-- Menu -------------------------------------------------------------------->
+			<nav>
+				<div class="hauptnav"><a href="javascript:zeige('alle')">Todas</a></div>
+			
+				<div class="hauptnav"><a href="javascript:zeige('neu')">&#218;ltimas a&#241;adidas</a></div>
+				
+				<div class="hauptnav"><a href="javascript:zeige('genrenav')">G&#233;neros</a></div>	
+
+				<div class="hauptnav"><a href="javascript:zeige('yearnav')">A&#241;os</a></div>				
+				
+				<div class="hauptnav"><a href="javascript:zeige('zufall')"><script>document.write(strZufallsfilm);</script></a></div>		
+			
+				<div <div class="hauptnav"><a href="javascript:zeige('suche')"><script>document.write(strFilter);</script></a> <input type="text" name="search" id="searchString" onkeyup="javascript:zeige('suche')"></div>
+								
+			</nav>
+			
+			<hr>
+			
+			<nav id="genrenav">
+			<!-- Genre-Menu --------------------->		
+				 <a href="genres/action.htm" class="button button-gray">Acci&#243;n</a>
+<a href="genres/thriller.htm" class="button button-gray">Suspenso</a>
+<a href="genres/horror.htm" class="button button-gray">Terror</a>
+<a href="genres/drama.htm" class="button button-gray">Drama</a>
+<a href="genres/sci-fi.htm" class="button button-gray">Ciencia Ficci&#243;n</a>
+<a href="genres/music.htm" class="button button-gray">M&#250;sica</a>
+<a href="genres/comedy.htm" class="button button-gray">Comedia</a>
+<a href="genres/adventure.htm" class="button button-gray">Aventuras</a>
+<a href="genres/war.htm" class="button button-gray">B&#233;lica</a>
+<a href="genres/fantasy.htm" class="button button-gray">Fantas&#237;a</a>
+<a href="genres/crime.htm" class="button button-gray">Policial</a>
+<a href="genres/animation.htm" class="button button-gray">Animaci&#243;n</a>
+<a href="genres/family.htm" class="button button-gray">Familiar</a>
+<a href="genres/documentary.htm" class="button button-gray">Documental</a>
+<a href="genres/western.htm" class="button button-gray">del Oeste</a>
+<a href="genres/romance.htm" class="button button-gray">Rom&#225;ntica</a>
+<a href="genres/mystery.htm" class="button button-gray">Misterio</a>
+<a href="genres/news.htm" class="button button-gray">Noticias</a>
+<a href="genres/sport.htm" class="button button-gray">Deportes</a>
+<a href="genres/history.htm" class="button button-gray">Hist&#243;rica</a>
+<a href="genres/biography.htm" class="button button-gray">Biogr&#225;ficas</a>
+<a href="genres/short.htm" class="button button-gray">Cortos</a>
+<a href="genres/musical.htm" class="button button-gray">Musical</a>
+<a href="genres/talk-show.htm" class="button button-gray">Entrevistas</a>
+								
+			</nav>
+			
+			<nav id="yearnav">
+			<!-- Year-Menu --------------------->		
+				 <a href="years.htm#2024" class="button button-gray">2024</a>
+<a href="years.htm#2023" class="button button-gray">2023</a>
+<a href="years.htm#2022" class="button button-gray">2022</a>
+<a href="years.htm#2021" class="button button-gray">2021</a>
+<a href="years.htm#2020" class="button button-gray">2020</a>
+<a href="years.htm#2019" class="button button-gray">2019</a>
+<a href="years.htm#2018" class="button button-gray">2018</a>
+<a href="years.htm#2017" class="button button-gray">2017</a>
+<a href="years.htm#2016" class="button button-gray">2016</a>
+<a href="years.htm#2015" class="button button-gray">2015</a>
+<a href="years.htm#2014" class="button button-gray">2014</a>
+<a href="years.htm#2013" class="button button-gray">2013</a>
+<a href="years.htm#2012" class="button button-gray">2012</a>
+<a href="years.htm#2011" class="button button-gray">2011</a>
+<a href="years.htm#2010" class="button button-gray">2010</a>
+<a href="years.htm#2009" class="button button-gray">2009</a>
+<a href="years.htm#2008" class="button button-gray">2008</a>
+<a href="years.htm#2007" class="button button-gray">2007</a>
+<a href="years.htm#2006" class="button button-gray">2006</a>
+<a href="years.htm#2005" class="button button-gray">2005</a>
+<a href="years.htm#2004" class="button button-gray">2004</a>
+<a href="years.htm#2003" class="button button-gray">2003</a>
+<a href="years.htm#2002" class="button button-gray">2002</a>
+<a href="years.htm#2001" class="button button-gray">2001</a>
+<a href="years.htm#2000" class="button button-gray">2000</a>
+<a href="years.htm#1999" class="button button-gray">1999</a>
+<a href="years.htm#1998" class="button button-gray">1998</a>
+<a href="years.htm#1997" class="button button-gray">1997</a>
+<a href="years.htm#1995" class="button button-gray">1995</a>
+<a href="years.htm#1994" class="button button-gray">1994</a>
+<a href="years.htm#1993" class="button button-gray">1993</a>
+<a href="years.htm#1992" class="button button-gray">1992</a>
+<a href="years.htm#1989" class="button button-gray">1989</a>
+<a href="years.htm#1987" class="button button-gray">1987</a>
+<a href="years.htm#1981" class="button button-gray">1981</a>
+<a href="years.htm#1976" class="button button-gray">1976</a>
+<a href="years.htm#1965" class="button button-gray">1965</a>
+<a href="years.htm#1963" class="button button-gray">1963</a>
+<a href="years.htm#1962" class="button button-gray">1962</a>
+ 
+			</nav>
+			
+<!-- Templates ----------------------------------------------------------------->
+        
+
+        
+
+<!-- without function, just for compatibility -->
+        
+		
+<!-- Article ----------------------------------------------------------------->
+			
+			<article id="latest-additions">
+				<h2 id= 'headline_new'>&#218;ltimas a&#241;adidas</h2>
+				<ul class="movielist"><li class="thumbnail">
+			<div class="thumbnail-pic">
+				<a href="movies/398.htm"><img border="0" src="covers/000639.jpg" align="middle"></a>
+			</div>
+			<div class="thumbnail-text">
+				<a href="movies/398.htm">Underworld: Rise of the Lycans&nbsp;&nbsp;(2009)</a>
+            </div>
+        </li>
+<li class="thumbnail">
+			<div class="thumbnail-pic">
+				<a href="movies/397.htm"><img border="0" src="covers/000638.jpg" align="middle"></a>
+			</div>
+			<div class="thumbnail-text">
+				<a href="movies/397.htm">Underworld: Evolution&nbsp;&nbsp;(2006)</a>
+            </div>
+        </li>
+<li class="thumbnail">
+			<div class="thumbnail-pic">
+				<a href="movies/400.htm"><img border="0" src="covers/000641.jpg" align="middle"></a>
+			</div>
+			<div class="thumbnail-text">
+				<a href="movies/400.htm">Underworld: Blood Wars&nbsp;&nbsp;(2016)</a>
+            </div>
+        </li>
+<li class="thumbnail">
+			<div class="thumbnail-pic">
+				<a href="movies/399.htm"><img border="0" src="covers/000640.jpg" align="middle"></a>
+			</div>
+			<div class="thumbnail-text">
+				<a href="movies/399.htm">Underworld: Awakening&nbsp;&nbsp;(2012)</a>
+            </div>
+        </li>
+<li class="thumbnail">
+			<div class="thumbnail-pic">
+				<a href="movies/396.htm"><img border="0" src="covers/000637.jpg" align="middle"></a>
+			</div>
+			<div class="thumbnail-text">
+				<a href="movies/396.htm">Underworld&nbsp;&nbsp;(2003)</a>
+            </div>
+        </li>
+<li class="thumbnail">
+			<div class="thumbnail-pic">
+				<a href="movies/401.htm"><img border="0" src="covers/000642.jpg" align="middle"></a>
+			</div>
+			<div class="thumbnail-text">
+				<a href="movies/401.htm">The Pale Blue Eye&nbsp;&nbsp;(2022)</a>
+            </div>
+        </li>
+<li class="thumbnail">
+			<div class="thumbnail-pic">
+				<a href="movies/386.htm"><img border="0" src="covers/000627.jpg" align="middle"></a>
+			</div>
+			<div class="thumbnail-text">
+				<a href="movies/386.htm">The Evil Dead&nbsp;&nbsp;(1981)</a>
+            </div>
+        </li>
+<li class="thumbnail">
+			<div class="thumbnail-pic">
+				<a href="movies/385.htm"><img border="0" src="covers/000626.jpg" align="middle"></a>
+			</div>
+			<div class="thumbnail-text">
+				<a href="movies/385.htm">Skyfall&nbsp;&nbsp;(2012)</a>
+            </div>
+        </li>
+<li class="thumbnail">
+			<div class="thumbnail-pic">
+				<a href="movies/383.htm"><img border="0" src="covers/000624.jpg" align="middle"></a>
+			</div>
+			<div class="thumbnail-text">
+				<a href="movies/383.htm">Public Enemies&nbsp;&nbsp;(2009)</a>
+            </div>
+        </li>
+<li class="thumbnail">
+			<div class="thumbnail-pic">
+				<a href="movies/391.htm"><img border="0" src="covers/000632.jpg" align="middle"></a>
+			</div>
+			<div class="thumbnail-text">
+				<a href="movies/391.htm">Pirates of the Caribbean: The Curse of the Black Pearl&nbsp;&nbsp;(2003)</a>
+            </div>
+        </li>
+<li class="thumbnail">
+			<div class="thumbnail-pic">
+				<a href="movies/393.htm"><img border="0" src="covers/000634.jpg" align="middle"></a>
+			</div>
+			<div class="thumbnail-text">
+				<a href="movies/393.htm">Pirates of the Caribbean: On Stranger Tides&nbsp;&nbsp;(2011)</a>
+            </div>
+        </li>
+<li class="thumbnail">
+			<div class="thumbnail-pic">
+				<a href="movies/392.htm"><img border="0" src="covers/000633.jpg" align="middle"></a>
+			</div>
+			<div class="thumbnail-text">
+				<a href="movies/392.htm">Pirates of the Caribbean: Dead Men Tell No Tales&nbsp;&nbsp;(2017)</a>
+            </div>
+        </li>
+<li class="thumbnail">
+			<div class="thumbnail-pic">
+				<a href="movies/379.htm"><img border="0" src="covers/000620.jpg" align="middle"></a>
+			</div>
+			<div class="thumbnail-text">
+				<a href="movies/379.htm">Fear Street: 1994&nbsp;&nbsp;(2021)</a>
+            </div>
+        </li>
+<li class="thumbnail">
+			<div class="thumbnail-pic">
+				<a href="movies/380.htm"><img border="0" src="covers/000621.jpg" align="middle"></a>
+			</div>
+			<div class="thumbnail-text">
+				<a href="movies/380.htm">Fear Street: 1978&nbsp;&nbsp;(2021)</a>
+            </div>
+        </li>
+<li class="thumbnail">
+			<div class="thumbnail-pic">
+				<a href="movies/381.htm"><img border="0" src="covers/000622.jpg" align="middle"></a>
+			</div>
+			<div class="thumbnail-text">
+				<a href="movies/381.htm">Fear Street: 1666&nbsp;&nbsp;(2021)</a>
+            </div>
+        </li>
+<li class="thumbnail">
+			<div class="thumbnail-pic">
+				<a href="movies/389.htm"><img border="0" src="covers/000630.jpg" align="middle"></a>
+			</div>
+			<div class="thumbnail-text">
+				<a href="movies/389.htm">Evil Dead Rise&nbsp;&nbsp;(2023)</a>
+            </div>
+        </li>
+<li class="thumbnail">
+			<div class="thumbnail-pic">
+				<a href="movies/388.htm"><img border="0" src="covers/000629.jpg" align="middle"></a>
+			</div>
+			<div class="thumbnail-text">
+				<a href="movies/388.htm">Evil Dead II&nbsp;&nbsp;(1987)</a>
+            </div>
+        </li>
+<li class="thumbnail">
+			<div class="thumbnail-pic">
+				<a href="movies/390.htm"><img border="0" src="covers/000631.jpg" align="middle"></a>
+			</div>
+			<div class="thumbnail-text">
+				<a href="movies/390.htm">Evil Dead&nbsp;&nbsp;(2013)</a>
+            </div>
+        </li>
+<li class="thumbnail">
+			<div class="thumbnail-pic">
+				<a href="movies/382.htm"><img border="0" src="covers/000623.jpg" align="middle"></a>
+			</div>
+			<div class="thumbnail-text">
+				<a href="movies/382.htm">Donnie Brasco&nbsp;&nbsp;(1997)</a>
+            </div>
+        </li>
+<li class="thumbnail">
+			<div class="thumbnail-pic">
+				<a href="movies/384.htm"><img border="0" src="covers/000625.jpg" align="middle"></a>
+			</div>
+			<div class="thumbnail-text">
+				<a href="movies/384.htm">Black Mass&nbsp;&nbsp;(2015)</a>
+            </div>
+        </li>
+</ul>
+			</article>
+					
+
+			<article id="allmovies">
+				<h2 id="headline">Todas</h2>
+				<ul>
+					
+				</ul>
+			</article>
+
+			<nav class="subnav"><a href="#wrapper">&nbsp;&nbsp;Top&nbsp;&nbsp;</a></nav>  		
+		</main>	
+
+		<div id="footer">
+
+		
+<!-- German Links 
+			<a href="https://www.themoviedb.org/" target="_new">TheMovieDB</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="https://www.omdb.org/" target="_new">OMDB</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;			
+			<a href="http://www.filmportal.de" target="_new">Filmportal</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;		
+			<a href="http://www.ofdb.de" target="_new">OFDB</a>
+-->
+<!-- English Links -->
+			<a href="https://www.imdb.com" target="_new">IMDB</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<a href="https://www.moviechat.org" target="_new">MovieChat</a>
+
+			<br/><br/>
+			Creado con EMDB V5.35 (C) 2005-2024. Sin derechos reservados ;-)
+		</div>
+	</div>
+	<!-- created by LeChuck (lechuck@icyweb.de) 18.04.2019 -->	
+</body>
+</html>
