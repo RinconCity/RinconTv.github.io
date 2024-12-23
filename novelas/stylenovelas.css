@@ -12,8 +12,7 @@ background-color: black;
 }
 
 .menu{
-    width: 100%;
-    max-width: 370px;
+    width: 95%;
     height: 100%;
     margin: 50px auto 80px;
 }
@@ -22,14 +21,13 @@ background-color: black;
 }
 
 .gridplace{
-    width: 95%;
-    height: 100%;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(3,1fr);
-    grid-auto-rows: 200px;
-    column-gap: 10px;
-    row-gap: 10px;
+  max-inline-size: 2000px;
+  margin-inline: auto;
+  list-style-type: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 2fr));
+  gap: 10px;
+  margin-bottom: 80px;
 }
 .card{
    /* width: 100%;  */
@@ -45,7 +43,7 @@ img{
     border-radius: 10px 10px 0px 0px;
 }
 .detalles{
-    font-size: .6rem;
+    font-size: .75em;
     
 }
 
