@@ -11,8 +11,7 @@ body{
 background-color: black;
 }
 .menu{
-    width: 100%;
-    max-width: 370px;
+    width: 95%;
     height: 100%;
     margin: 50px auto 80px;
 }
@@ -21,21 +20,21 @@ background-color: black;
 }
 
 .gridplace{
-    width: 95%;
-    height: 100%;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(3,1fr);
-    grid-auto-rows: 200px;
-    column-gap: 10px;
-    row-gap: 10px;
+  max-inline-size: 2000px;
+  margin-inline: auto;
+  list-style-type: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+  grid-auto-rows: 200px;
+  gap: 10px;
+  margin-bottom: 80px;
 }
 .card{
    /* width: 100%;  */
    /* height: 285px; */
    text-align: center;
    background-color: white;
-   box-shadow: 0px 0px 6px 0px white;
+   box-shadow: 0px 0px 5px 0px white;
    border-radius: 10px;
 }
 img{
