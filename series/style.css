@@ -24,7 +24,7 @@ background-color: black;
     margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    grid-auto-rows: 285px;
+    grid-auto-rows: 250px;
     gap: 10px;
 }
 .card{
@@ -41,7 +41,7 @@ img{
     border-radius: 8px 8px 0px 0px;
 }
 .detalles{
-    font-size: .7rem;
+    font-size: .6rem;
     
 }
 
