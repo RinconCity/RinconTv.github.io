@@ -10,7 +10,7 @@ body {
 /* contenedor negro */
 .container {
     margin: 0px auto 200px;
-    width: 100vh;
+    /* width: 100vh; */
     /* max-width: 1000px; */
     padding: 10px;
     background: #14181c;
@@ -248,7 +248,7 @@ b {
 }
 
 .movie-container .right {
-    margin-left: 5px;
+    margin-left: 0px;
 }
 /* POSTER DE PELICULA */
 .poster { 
@@ -290,23 +290,23 @@ b {
 
 /* BATEITO */
 ul.movie-list {
-    list-style-type: none;
-    padding-left: 0px;
-    margin: 0 auto;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 25px;
+  max-inline-size: 2000px;
+  margin-inline: auto;
+  list-style-type: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 2fr));
+  grid-auto-rows: 900px;
+  gap: 20px;
+  margin-bottom: 80px;
 }
 
 ul.movie-list > li {
-    margin-bottom: 3px;
+    
 }
 
 ul.movie-list > li.thumbnail {
     display: inline-block;
-    width: 470px;
-    max-width: 650px;
+    width: 100%;
     /* overflow: hidden; */
     text-align: center;
     margin: 15px 0;
@@ -318,8 +318,8 @@ ul.movie-list > li.thumbnail {
 }
 /* IMAGENES */
 .thumbnail .shiny-container img {
-    width: 470px;
-    height: 650px;
+    width: 100%;
+    height: 700px;
     border-radius: 10px;
     box-shadow: 0px 0px 10px 0px white;
 }
