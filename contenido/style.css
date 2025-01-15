@@ -7,7 +7,8 @@
 
 body{
     width: 100%;
-    height: 100%;
+    height: 100vh;
+    background-color: black;
     background-image: url(https://www.solofondos.com/wp-content/uploads/2021/03/becbb42525860445b44ea7d9d8e20d85.jpg);
     background-size: contain;
     background-position: center;
