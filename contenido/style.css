@@ -6,7 +6,10 @@
 }
 
 body{
-    background-color: black;
+    background-image: url(backgame.jpg);
+    background-size: cover;
+    /* background-position: center; */
+    background-repeat: no-repeat;
 }
 .title{
     background-color: black;
