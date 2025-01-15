@@ -11,7 +11,7 @@ body{
     background-color: black;
     background-image: url(https://i.pinimg.com/736x/60/20/8b/60208b4f19aadad329833029fb6220f7.jpg);
     background-size: cover;
-    background-position: center;
+    /* background-position: center; */
     background-repeat: no-repeat;
 }
 .title{
