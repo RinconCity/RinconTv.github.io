@@ -70,6 +70,7 @@ a{
     background-color: black;
     padding: 10px 0px;
     border-bottom: 5px solid white;
+    display: none;
 }
 
 .sub-title{
@@ -119,6 +120,9 @@ p,.tagline{
 
 .actor-paragraph{
     text-align: center;
+}
+.header-green, .sub-title, .footer{
+    display: none;
 }
 
 
