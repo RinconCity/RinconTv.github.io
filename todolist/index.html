@@ -3,207 +3,123 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>To-Do List Responsiva</title>
+  <title>To-Do List</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
+      background-color: #505050;
       margin: 0;
-      padding: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      width: 100%;
-      background: white;
+    .container {
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 8px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      z-index: 1000;
+      width: 350px;
     }
-    header h1 {
+    h1 {
       text-align: center;
       color: #333;
-      margin: 0;
+      margin-bottom: 20px;
     }
-    .input-container {
-      padding: 5px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 20px;
-    }
-    input[type="text"], input[type="url"], input[type="file"] {
+    input[type="text"] {
+      width: calc(100% - 22px);
       padding: 10px;
+      margin-bottom: 10px;
       border: 1px solid #ddd;
-      border-radius: 5px;
-      font-size: 16px;
+      border-radius: 4px;
     }
     button {
+      width: 100%;
       padding: 10px;
-      background-color: #333;
+      background-color: #28a745;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 4px;
       cursor: pointer;
       font-size: 16px;
     }
     button:hover {
-      background-color: #555;
+      background-color: #218838;
     }
-    .tasks-container {
-      margin-top: 180px; /* Espacio para el formulario fijo */
-      padding: 20px;
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
+    ul {
+      list-style-type: none;
+      padding: 0;
     }
-    .task-card {
-      background: #f9f9f9;
-      border: 1px solid #ddd;
-      border-radius: 10px;
+    li {
+      background: #f8f9fa;
+      margin-bottom: 5px;
       padding: 10px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease;
-    }
-    .task-card:hover {
-      transform: scale(1.05);
-    }
-    .task-card img {
-      width: 100%;
-      height: auto;
-      border-radius: 5px;
-      margin-bottom: 10px;
-    }
-    .task-card h3 {
-      font-size: 18px;
-      margin: 0 0 10px 0;
-      text-align: center;
-      min-height: 40px;
-    }
-    .task-card .actions {
+      border-radius: 4px;
       display: flex;
       justify-content: space-between;
-      gap: 10px;
+      align-items: center;
     }
-    .task-card button {
-      background-color: #ff4d4d;
-      border: none;
+    li.completed {
+      text-decoration: line-through;
+      color: #888;
+    }
+    .delete-btn {
+      width: 80px;
+      background-color: #dc3545;
       color: white;
+      border: none;
+      border-radius: 4px;
       padding: 5px 10px;
-      border-radius: 5px;
       cursor: pointer;
     }
-    .task-card button:hover {
-      background-color: #ff1a1a;
-    }
-    @media (max-width: 768px) {
-      .tasks-container {
-        grid-template-columns: 1fr;
-      }
+    .delete-btn:hover {
+      background-color: #c82333;
     }
   </style>
 </head>
 <body>
-  <header>
+  <div class="container">
     <h1>To-Do List</h1>
-    <div class="input-container">
-      <input type="text" id="task-input" placeholder="Escribe tu tarea..." />
-      <input type="url" id="image-url" placeholder="Enlace de la imagen (opcional)" />
-      <input type="file" id="image-upload" accept="image/*" />
-      <button onclick="addTask()">Agregar Tarea</button>
-    </div>
-  </header>
-
-  <div class="tasks-container" id="tasks-container"></div>
+    <input type="text" id="taskInput" placeholder="Añadir nueva tarea...">
+    <button onclick="addTask()">Añadir Tarea</button>
+    <ul id="taskList"></ul>
+  </div>
 
   <script>
-    // Cargar tareas desde localStorage al iniciar
-    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-
-    function saveTasks() {
-      localStorage.setItem("tasks", JSON.stringify(tasks));
-    }
-
-    function renderTasks() {
-      const tasksContainer = document.getElementById("tasks-container");
-      tasksContainer.innerHTML = "";
-      tasks.forEach((task, index) => {
-        const taskCard = document.createElement("div");
-        taskCard.className = "task-card";
-        taskCard.innerHTML = `
-          ${task.image ? `<img src="${task.image}" alt="Imagen de la tarea">` : ""}
-          <h3 contenteditable="true" onblur="updateTaskText(${index}, this.innerText)">${task.text}</h3>
-          <div class="actions">
-            <button onclick="deleteTask(${index})">Eliminar</button>
-          </div>
-        `;
-        tasksContainer.appendChild(taskCard);
-      });
-    }
-
     function addTask() {
-      const taskInput = document.getElementById("task-input");
-      const imageUrlInput = document.getElementById("image-url");
-      const imageUploadInput = document.getElementById("image-upload");
-
+      const taskInput = document.getElementById('taskInput');
       const taskText = taskInput.value.trim();
-      const imageUrl = imageUrlInput.value.trim();
-      const imageFile = imageUploadInput.files[0];
-
-      if (!taskText) {
-        alert("Por favor, ingresa una tarea válida.");
+      if (taskText === '') {
+        alert('Por favor, escribe una tarea.');
         return;
       }
 
-      let finalImageUrl = null;
+      const taskList = document.getElementById('taskList');
 
-      if (imageUrl) {
-        finalImageUrl = imageUrl;
-      } else if (imageFile) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          finalImageUrl = reader.result;
-          const newTask = {
-            text: taskText,
-            image: finalImageUrl,
-          };
-          tasks.push(newTask);
-          saveTasks();
-          renderTasks();
-        };
-        reader.readAsDataURL(imageFile);
-        return; // Esperamos a que se cargue la imagen antes de continuar
-      }
+      // Crear elemento de lista
+      const li = document.createElement('li');
+      li.textContent = taskText;
 
-      const newTask = {
-        text: taskText,
-        image: finalImageUrl,
+      // Botón para eliminar tarea
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = 'Eliminar';
+      deleteBtn.className = 'delete-btn';
+      deleteBtn.onclick = function () {
+        taskList.removeChild(li);
       };
 
-      tasks.push(newTask);
-      saveTasks();
-      renderTasks();
+      // Marcar tarea como completada
+      li.onclick = function () {
+        li.classList.toggle('completed');
+      };
 
-      // Limpiar campos de entrada
-      taskInput.value = "";
-      imageUrlInput.value = "";
-      imageUploadInput.value = "";
+      li.appendChild(deleteBtn);
+      taskList.appendChild(li);
+
+      // Limpiar el campo de entrada
+      taskInput.value = '';
     }
-
-    function deleteTask(index) {
-      tasks.splice(index, 1);
-      saveTasks();
-      renderTasks();
-    }
-
-    function updateTaskText(index, newText) {
-      tasks[index].text = newText;
-      saveTasks();
-    }
-
-    // Renderizar tareas al cargar la página
-    renderTasks();
   </script>
 </body>
 </html>
