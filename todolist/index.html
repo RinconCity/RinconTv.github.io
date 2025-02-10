@@ -33,7 +33,7 @@
       gap: 10px;
       margin-bottom: 20px;
     }
-    input[type="text"], input[type="file"] {
+    input[type="text"], input[type="url"], input[type="file"] {
       padding: 10px;
       border: 1px solid #ddd;
       border-radius: 5px;
@@ -77,6 +77,7 @@
       font-size: 18px;
       margin: 0 0 10px 0;
       text-align: center;
+      min-height: 40px;
     }
     .task-card .actions {
       display: flex;
@@ -106,6 +107,7 @@
     <h1>To-Do List</h1>
     <div class="input-container">
       <input type="text" id="task-input" placeholder="Escribe tu tarea..." />
+      <input type="url" id="image-url" placeholder="Enlace de la imagen (opcional)" />
       <input type="file" id="image-upload" accept="image/*" />
       <button onclick="addTask()">Agregar Tarea</button>
     </div>
@@ -139,43 +141,51 @@
 
     function addTask() {
       const taskInput = document.getElementById("task-input");
-      const imageUpload = document.getElementById("image-upload");
+      const imageUrlInput = document.getElementById("image-url");
+      const imageUploadInput = document.getElementById("image-upload");
 
       const taskText = taskInput.value.trim();
-      const imageFile = imageUpload.files[0];
+      const imageUrl = imageUrlInput.value.trim();
+      const imageFile = imageUploadInput.files[0];
 
       if (!taskText) {
         alert("Por favor, ingresa una tarea válida.");
         return;
       }
 
-      let imageUrl = null;
-      if (imageFile) {
+      let finalImageUrl = null;
+
+      if (imageUrl) {
+        finalImageUrl = imageUrl;
+      } else if (imageFile) {
         const reader = new FileReader();
         reader.onload = () => {
-          imageUrl = reader.result;
+          finalImageUrl = reader.result;
           const newTask = {
             text: taskText,
-            image: imageUrl,
+            image: finalImageUrl,
           };
           tasks.push(newTask);
           saveTasks();
           renderTasks();
         };
         reader.readAsDataURL(imageFile);
-      } else {
-        const newTask = {
-          text: taskText,
-          image: null,
-        };
-        tasks.push(newTask);
-        saveTasks();
-        renderTasks();
+        return; // Esperamos a que se cargue la imagen antes de continuar
       }
+
+      const newTask = {
+        text: taskText,
+        image: finalImageUrl,
+      };
+
+      tasks.push(newTask);
+      saveTasks();
+      renderTasks();
 
       // Limpiar campos de entrada
       taskInput.value = "";
-      imageUpload.value = "";
+      imageUrlInput.value = "";
+      imageUploadInput.value = "";
     }
 
     function deleteTask(index) {
