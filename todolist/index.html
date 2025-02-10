@@ -4,122 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>To-Do List</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #505050;
-      margin: 0;
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .container {
-      background: #fff;
-      padding: 20px 30px;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      width: 350px;
-    }
-    h1 {
-      text-align: center;
-      color: #333;
-      margin-bottom: 20px;
-    }
-    input[type="text"] {
-      width: calc(100% - 22px);
-      padding: 10px;
-      margin-bottom: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-    button {
-      width: 100%;
-      padding: 10px;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    button:hover {
-      background-color: #218838;
-    }
-    ul {
-      list-style-type: none;
-      padding: 0;
-    }
-    li {
-      background: #f8f9fa;
-      margin-bottom: 5px;
-      padding: 10px;
-      border-radius: 4px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    li.completed {
-      text-decoration: line-through;
-      color: #888;
-    }
-    .delete-btn {
-      width: 80px;
-      background-color: #dc3545;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      padding: 5px 10px;
-      cursor: pointer;
-    }
-    .delete-btn:hover {
-      background-color: #c82333;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="container">
     <h1>To-Do List</h1>
-    <input type="text" id="taskInput" placeholder="Añadir nueva tarea...">
-    <button onclick="addTask()">Añadir Tarea</button>
+    <div class="input-container">
+      <input type="text" id="taskInput" placeholder="Añadir nueva tarea..." />
+      <button id="addTaskBtn">Agregar</button>
+    </div>
     <ul id="taskList"></ul>
   </div>
 
-  <script>
-    function addTask() {
-      const taskInput = document.getElementById('taskInput');
-      const taskText = taskInput.value.trim();
-      if (taskText === '') {
-        alert('Por favor, escribe una tarea.');
-        return;
-      }
-
-      const taskList = document.getElementById('taskList');
-
-      // Crear elemento de lista
-      const li = document.createElement('li');
-      li.textContent = taskText;
-
-      // Botón para eliminar tarea
-      const deleteBtn = document.createElement('button');
-      deleteBtn.textContent = 'Eliminar';
-      deleteBtn.className = 'delete-btn';
-      deleteBtn.onclick = function () {
-        taskList.removeChild(li);
-      };
-
-      // Marcar tarea como completada
-      li.onclick = function () {
-        li.classList.toggle('completed');
-      };
-
-      li.appendChild(deleteBtn);
-      taskList.appendChild(li);
-
-      // Limpiar el campo de entrada
-      taskInput.value = '';
-    }
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
