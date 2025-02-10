@@ -10,28 +10,28 @@
       background-color: #f4f4f9;
       margin: 0;
       padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
     }
-    .todo-container {
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
       background: white;
-      padding: 20px;
-      border-radius: 10px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      width: 90%;
-      max-width: 1200px;
+      z-index: 1000;
     }
-    h1 {
+    header h1 {
       text-align: center;
       color: #333;
+      margin: 0;
     }
     .input-container {
+      padding: 5px;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      margin-bottom: 20px;
+      margin-top: 20px;
     }
     input[type="text"], input[type="url"], input[type="file"] {
       padding: 10px;
@@ -52,8 +52,10 @@
       background-color: #555;
     }
     .tasks-container {
+      margin-top: 180px; /* Espacio para el formulario fijo */
+      padding: 20px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 20px;
     }
     .task-card {
@@ -97,13 +99,13 @@
     }
     @media (max-width: 768px) {
       .tasks-container {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
 <body>
-  <div class="todo-container">
+  <header>
     <h1>To-Do List</h1>
     <div class="input-container">
       <input type="text" id="task-input" placeholder="Escribe tu tarea..." />
@@ -111,8 +113,9 @@
       <input type="file" id="image-upload" accept="image/*" />
       <button onclick="addTask()">Agregar Tarea</button>
     </div>
-    <div class="tasks-container" id="tasks-container"></div>
-  </div>
+  </header>
+
+  <div class="tasks-container" id="tasks-container"></div>
 
   <script>
     // Cargar tareas desde localStorage al iniciar
