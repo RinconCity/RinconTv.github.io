@@ -1,0 +1,111 @@
+@charset "UTF-8";
+.btn-requisitos {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-requisitos:hover {
+  background-color: #0056b3;
+}
+
+/* Estilo de la ventana emergente */
+.ventana-emergente {
+  display: none; /* Oculta la ventana por defecto */
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fondo semi-transparente */
+}
+
+.contenido-ventana {
+  background-color: #fff;
+  margin: 5% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 600px;
+  border-radius: 10px;
+  position: relative;
+  text-align: center;
+}
+
+/* Estilo del botón de cierre */
+.cerrar {
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  color: #aaa;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.cerrar:hover,
+.cerrar:focus {
+  color: #000;
+}
+
+/* Estilo de los requisitos */
+.requisitos {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  text-align: left;
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.requisitos h3 {
+  margin: 0 0 10px;
+  font-size: 18px;
+  color: #333;
+}
+
+.requisitos ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.requisitos li {
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #555;
+}
+
+.requisitos strong {
+  color: #007bff;
+  font-weight: bold;
+}
+
+/* Estilo del carrusel */
+.carrusel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 10px;
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.carrusel img {
+  width: 250px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 5px;
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
