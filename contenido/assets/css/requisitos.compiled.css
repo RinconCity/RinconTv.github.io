@@ -29,10 +29,10 @@
 .contenido-ventana {
   background-color: #fff;
   margin: 5% auto;
-  padding: 20px;
+  padding: 5px;
   border: 1px solid #888;
-  width: 80%;
-  max-width: 600px;
+  width: 90%;
+  max-width: 800px;
   border-radius: 10px;
   position: relative;
   text-align: center;
@@ -60,7 +60,7 @@
   margin-bottom: 20px;
   text-align: left;
   background-color: #f9f9f9;
-  padding: 15px;
+  padding: 5px;
   border-radius: 5px;
   border: 1px solid #ddd;
 }

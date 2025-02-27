@@ -166,3 +166,8 @@
   padding-left: 10px;
 }
 
+.popup {
+  display: flex;
+  justify-content: center;
+}
+

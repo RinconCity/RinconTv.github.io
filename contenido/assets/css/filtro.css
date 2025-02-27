@@ -2,3 +2,9 @@
   display: none;
 }
 
+.grille-hover.filtros {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
