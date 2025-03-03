@@ -21,7 +21,7 @@
                     carrusel.innerHTML = '';
 
                     // Obtener datos de los requisitos mínimos del juego (PC)
-                    const apiKey = '5a5420e92011457ab4c496417e8685a8';
+                    const apiKey = '8b5b667ac481455cbdf591f778f1c594';
                     const gameResponse = await fetch(`https://api.rawg.io/api/games/${gameId}?key=${apiKey}`);
                     const gameData = await gameResponse.json();
 
