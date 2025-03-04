@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Películas y Series</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Buscar por título o artista..." />
+        </div>
+    </header>
+
+    <div class="container" id="movieContainer">
+        <!-- Ejemplo de Película -->
+        <div data-id="550" data-type="movie"></div>
+        <div data-id="680" data-type="movie"></div>
+        <div data-id="13" data-type="movie"></div>
+        <!-- Ejemplo de Serie -->
+        <div data-id="1399" data-type="tv"></div>
+        <div data-id="44217" data-type="tv"></div>
+        <div data-id="116135" data-type="tv"></div>
+        <div data-id="218589" data-type="tv"></div>
+        <div data-id="61729" data-type="tv"></div>
+        <div data-id="31910" data-type="tv"></div>
+        <div data-id="37854" data-type="tv"></div>
+        <div data-id="65930" data-type="tv"></div>
+    </div>
+
+<!-- Modal para detalles -->
+<div id="detailModal" class="modal">
+    <div class="modal-content">
+        <!-- Ícono flotante para cerrar -->
+        <span class="close-icon">&times;</span>
+        <img id="modalImage" alt="Portada" />
+        <div class="info-container">
+            <h2 id="modalTitle"></h2>
+            <p><strong>Título Original:</strong> <span id="modalOriginalTitle"></span></p>
+            <p><strong>Título en Español:</strong> <span id="modalSpanishTitle"></span></p>
+            <p><strong>Sinopsis:</strong> <span id="modalOverview"></span></p>
+            <p><strong>Género:</strong> <span id="modalGenres"></span></p>
+            <p id="modalSeasonsEpisodes"></p>
+            <p><strong>Año de Lanzamiento:</strong> <span id="modalReleaseYear"></span></p>
+        </div>
+    </div>
+
+    <!-- Contenedor de Referencias -->
+    <div class="references-container">
+        <h3>Referencias</h3>
+        <div class="references-grid" id="referencesGrid"></div>
+    </div>
+</div>
+
+    <!-- Modal para el tráiler -->
+<div id="trailerModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <iframe id="trailerIframe" width="100%" height="400px" frameborder="0" allowfullscreen></iframe>
+    </div>
+</div>
+
+    <script src="script.js"></script>
+</body>
+</html>
