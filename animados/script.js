@@ -13,28 +13,14 @@ async function fetchTrailers(id, type) {
     return data.results.find((video) => video.type === "Trailer" && video.site === "YouTube");
 }
 
-// Objeto global para almacenar datos completos
-const movieDataCache = {};
-
-// Función para cargar datos de TMDB
-async function fetchData(id, type) {
-    const url = `https://api.themoviedb.org/3/${type}/${id}?api_key=${apiKey}&language=es-ES`;
-    const response = await fetch(url);
-    return await response.json();
-}
-
-
-//IMPLEMENTADO
+// Función para cargar datos de TMDB (incluyendo créditos)
 async function fetchData(id, type) {
     const url = `https://api.themoviedb.org/3/${type}/${id}?api_key=${apiKey}&language=es-ES`;
     const creditsUrl = `https://api.themoviedb.org/3/${type}/${id}/credits?api_key=${apiKey}`;
 
-    // Obtener datos principales
-    const response = await fetch(url);
-    const data = await response.json();
-
-    // Obtener créditos (actores)
-    const creditsResponse = await fetch(creditsUrl);
+    // Obtener datos principales y créditos simultáneamente
+    const [dataResponse, creditsResponse] = await Promise.all([fetch(url), fetch(creditsUrl)]);
+    const data = await dataResponse.json();
     const creditsData = await creditsResponse.json();
 
     // Agregar los actores al objeto de datos
@@ -142,6 +128,41 @@ document.querySelectorAll("#movieContainer > div").forEach(async (item) => {
     item.replaceWith(card);
 });
 
+// Función para cargar todas las tarjetas iniciales y ordenarlas por fecha
+async function loadAndSortCards() {
+    const items = Array.from(document.querySelectorAll("#movieContainer > div"));
+
+    // Obtener datos completos para cada tarjeta
+    const cardsWithData = await Promise.all(
+        items.map(async (item) => {
+            const id = item.dataset.id;
+            const type = item.dataset.type;
+            const data = await fetchData(id, type);
+            return { data, type };
+        })
+    );
+
+    // Ordenar las tarjetas por fecha (de más reciente a más antigua)
+    cardsWithData.sort((a, b) => {
+        const dateA = a.data.release_date || a.data.first_air_date || "0000-00-00";
+        const dateB = b.data.release_date || b.data.first_air_date || "0000-00-00";
+        return new Date(dateB) - new Date(dateA); // Orden descendente
+    });
+
+    // Limpiar el contenedor antes de agregar las tarjetas ordenadas
+    movieContainer.innerHTML = "";
+
+    // Renderizar las tarjetas en el nuevo orden
+    cardsWithData.forEach(({ data, type }) => {
+        const card = renderCard(data, type);
+        movieContainer.appendChild(card);
+    });
+}
+
+// Llamar a la función para cargar y ordenar las tarjetas al iniciar
+loadAndSortCards();
+
+// Función de búsqueda modificada para mantener el orden
 document.getElementById("searchInput").addEventListener("input", () => {
     const query = document.getElementById("searchInput").value.toLowerCase();
 
@@ -212,11 +233,7 @@ function openModal(data, type) {
     const castContainer = document.getElementById("modalCast");
     castContainer.innerHTML = ""; // Limpiar el contenedor antes de cargar nuevos datos
 
-    const apiKey = "8c9db7808806d5a5ac4e84a985077193";
-    const mediaType = type; // "movie" o "tv"
-    const mediaId = data.id;
-
-    fetch(`https://api.themoviedb.org/3/${mediaType}/${mediaId}/credits?api_key=${apiKey}`)
+    fetch(`https://api.themoviedb.org/3/${type}/${data.id}/credits?api_key=${apiKey}`)
         .then((response) => response.json())
         .then((creditsData) => {
             const cast = creditsData.cast.slice(0, 10); // Mostrar solo los primeros 10 actores
