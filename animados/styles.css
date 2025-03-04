@@ -433,3 +433,34 @@ header {
     margin: 5px 0;
     color: #333;
 }
+
+.cast-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px; /* Espacio entre las tarjetas */
+    overflow-x: auto; /* Desplazamiento horizontal si hay muchas tarjetas */
+    padding: 10px;
+}
+
+.actor-card {
+    width: 120px; /* Ancho de cada tarjeta */
+    text-align: center;
+    font-size: 14px;
+    flex-shrink: 0; /* Evitar que las tarjetas se contraigan */
+}
+
+.actor-card img {
+    width: 100%;
+    height: 160px; /* Altura fija para las imágenes */
+    object-fit: cover; /* Ajustar la imagen dentro del contenedor */
+    border-radius: 8px; /* Bordes redondeados */
+    margin-bottom: 5px; /* Espacio entre la imagen y el nombre */
+}
+
+.actor-card p {
+    margin: 0;
+    color: white;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}

@@ -208,6 +208,47 @@ function openModal(data, type) {
     // Cargar referencias
     loadReferences(data);
 
+    // Obtener el elenco
+    const castContainer = document.getElementById("modalCast");
+    castContainer.innerHTML = ""; // Limpiar el contenedor antes de cargar nuevos datos
+
+    const apiKey = "8c9db7808806d5a5ac4e84a985077193";
+    const mediaType = type; // "movie" o "tv"
+    const mediaId = data.id;
+
+    fetch(`https://api.themoviedb.org/3/${mediaType}/${mediaId}/credits?api_key=${apiKey}`)
+        .then((response) => response.json())
+        .then((creditsData) => {
+            const cast = creditsData.cast.slice(0, 10); // Mostrar solo los primeros 10 actores
+            cast.forEach((actor) => {
+                // Crear la tarjeta del actor
+                const actorCard = document.createElement("div");
+                actorCard.classList.add("actor-card");
+
+                // Imagen del actor
+                const actorImage = document.createElement("img");
+                actorImage.src = actor.profile_path
+                    ? `https://image.tmdb.org/t/p/w185${actor.profile_path}`
+                    : "https://via.placeholder.com/120x160?text=No+Image"; // Imagen por defecto si no hay foto
+                actorImage.alt = actor.name;
+
+                // Nombre del actor
+                const actorName = document.createElement("p");
+                actorName.textContent = actor.name;
+
+                // Agregar elementos a la tarjeta
+                actorCard.appendChild(actorImage);
+                actorCard.appendChild(actorName);
+
+                // Agregar la tarjeta al contenedor
+                castContainer.appendChild(actorCard);
+            });
+        })
+        .catch((error) => {
+            console.error("Error al cargar el elenco:", error);
+            castContainer.innerHTML = "<p>No se pudo cargar el elenco.</p>";
+        });
+
     // Mostrar el modal de detalles
     const detailModal = document.getElementById("detailModal");
     detailModal.style.display = "block";
