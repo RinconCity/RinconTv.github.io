@@ -1,466 +1,224 @@
+/* Estilos generales */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    color: #333;
-    padding: 20px;
-}
-
-header {
-    position: fixed; /* Fijar el encabezado en la parte superior */
-    top: 0;
-    left: 0;
-    width: 100%;
-    background-color: #fff; /* Fondo blanco */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para destacar */
-    z-index: 1000; /* Asegura que esté por encima de otros elementos */
-    padding: 10px 20px; /* Espaciado interno */
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  padding: 20px;
 }
 
 .search-container {
-    max-width: 1200px; /* Ancho máximo centrado */
-    margin: 0 auto; /* Centrar horizontalmente */
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 #searchInput {
-    width: 100%; /* Ocupa todo el ancho disponible */
-    padding: 10px;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    outline: none; /* Eliminar el borde azul al hacer foco */
-    transition: border-color 0.3s ease; /* Animación suave */
+  width: 80%;
+  max-width: 600px;
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+  transition: border-color 0.3s ease;
 }
 
 #searchInput:focus {
-    border-color: #007bff; /* Cambiar el color del borde al hacer foco */
+  border-color: #007bff;
 }
 
-/* Contenedor principal */
 .container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
-    padding-top: 60px; /* Espacio para evitar que las tarjetas queden detrás del encabezado */
-    padding-bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
 }
 
-/* Estilos para las tarjetas */
-.container > div {
-    background-color: #fff;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-    cursor: pointer;
+.card {
+  position: relative;
+  background-color: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  width: 250px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  cursor: pointer;
 }
 
-.container > div:hover {
-    transform: scale(1.05);
+.card:hover {
+  transform: scale(1.05);
 }
 
-.container img {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-
-.container .info {
-    padding: 10px;
-    text-align: center;
-}
-
-.info h3 {
-    font-size: 1rem;
-    margin-bottom: 5px;
-}
-
-.info p {
-    font-size: 0.9rem;
-    color: #666;
-}
-
-/* Estilos generales para todos los modales */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000; /* Prioridad alta para los modales */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    overflow-y: auto; /* Permite desplazamiento si el contenido es demasiado grande */
-}
-
-.modal .modal-content {
-    background-color: #fff;
-    margin: 20px auto; /* Margen superior e inferior */
-    padding: 20px;
-    border-radius: 10px;
-    max-width: 1400px; /* Ancho máximo más amplio */
-    position: relative;
-    z-index: 1001;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para destacar el modal */
-    overflow: hidden; /* Evitar desbordamientos */
-    display: flex; /* Usamos Flexbox para organizar la imagen y la información */
-    flex-direction: row; /* Imagen a la izquierda, info a la derecha */
-    align-items: flex-start; /* Alinear elementos al inicio */
-    gap: 20px; /* Espacio entre la imagen y la información */
-}
-
-/* Estilo de la imagen */
-.modal img {
-    width: auto; /* El ancho se ajusta automáticamente */
-    height: 300px; /* Altura fija para la imagen */
-    object-fit: cover; /* Asegurar que la imagen no se distorsione */
-    border-radius: 10px; /* Bordes redondeados */
-    flex-shrink: 0; /* Evitar que la imagen se reduzca */
-}
-
-/* En pantallas grandes, dividimos en dos columnas */
-@media (min-width: 768px) {
-    .modal .modal-content {
-        flex-direction: row; /* Imagen a la izquierda, info a la derecha */
-        align-items: flex-start; /* Alinear elementos al inicio */
-    }
-
-    .modal img {
-        width: 300px; /* Ancho fijo para la imagen */
-        height: auto; /* Mantener la proporción */
-        object-fit: cover; /* Asegurar que la imagen no se distorsione */
-        border-radius: 10px; /* Bordes redondeados */
-        flex-shrink: 0; /* Evitar que la imagen se reduzca */
-    }
-
-    .info-container {
-        flex: 1; /* La información ocupa el resto del espacio */
-        text-align: left; /* Alinear el texto a la izquierda */
-    }
-}
-
-/* Contenedor de la información */
-.info-container {
-    flex: 1; /* La información ocupa el resto del espacio */
-    text-align: left; /* Alinear el texto a la izquierda */
-    display: flex;
-    flex-direction: column; /* Organizar la información en columna */
-    justify-content: center; /* Centrar verticalmente el contenido */
-}
-
-.info-container h2 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-}
-
-.info-container p {
-    font-size: 1rem;
-    line-height: 1.5;
-    margin: 5px 0;
-}
-
-/* Diseño para pantallas pequeñas */
-@media (max-width: 768px) {
-    .modal .modal-content {
-        flex-direction: column; /* Una columna en pantallas pequeñas */
-        align-items: center; /* Centrar el contenido */
-        max-width: 90%; /* Ancho máximo más pequeño para dispositivos móviles */
-    }
-
-    .modal img {
-        width: 100%; /* La imagen ocupa todo el ancho */
-        height: auto; /* Mantener la proporción */
-    }
-
-    .info-container {
-        text-align: center; /* Centrar el texto */
-    }
-}
-/* Ícono flotante para cerrar */
-.close-icon {
-    position: fixed; /* Fijo en la pantalla, no en el modal */
-    right: 20px;
-    top: 20px;
-    font-size: 4rem; /* Tamaño más grande */
-    cursor: pointer;
-    z-index: 2000; /* Asegura que esté por encima de todo */
-    animation: colorChange 5s infinite; /* Animación de cambio de color */
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* Efecto brillante */
-}
-
-/* Animación de cambio de colores translúcidos */
-@keyframes colorChange {
-    0% {
-        color: rgba(255, 255, 255, 0.8); /* Blanco translúcido */
-    }
-    25% {
-        color: rgba(255, 0, 0, 0.8); /* Rojo translúcido */
-    }
-    50% {
-        color: rgba(0, 255, 0, 0.8); /* Verde translúcido */
-    }
-    75% {
-        color: rgba(0, 0, 255, 0.8); /* Azul translúcido */
-    }
-    100% {
-        color: rgba(255, 255, 255, 0.8); /* Blanco translúcido */
-    }
-}
-
-/* Ícono flotante para cerrar */
-.close-icon {
-    position: fixed; /* Fijo en la pantalla, no en el modal */
-    right: 20px;
-    top: 20px;
-    font-size: 4rem; /* Tamaño más grande */
-    cursor: pointer;
-    z-index: 2000; /* Asegura que esté por encima de todo */
-    animation: colorChange 5s infinite; /* Animación de cambio de color */
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* Efecto brillante */
-}
-
-.close-icon:hover {
-    color: rgba(255, 0, 0, 0.8); /* Cambia a rojo translúcido al pasar el ratón */
-    transform: scale(1.2); /* Aumenta ligeramente de tamaño */
-}
-
-
-.modal h2,
-.modal p {
-    margin: 10px 0; /* Espaciado entre elementos */
-    font-size: 1rem; /* Tamaño de fuente adaptable */
-    line-height: 1.5; /* Mejor legibilidad */
-}
-
-.modal .close {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    font-size: 1.5rem;
-    color: #fff;
-    cursor: pointer;
-    z-index: 1002;
-}
-
-.modal .close:hover {
-    color: red;
-}
-
-/* Estilos específicos para dispositivos móviles */
-@media (max-width: 768px) {
-    .modal .modal-content {
-        padding: 15px; /* Reducir el relleno en pantallas pequeñas */
-    }
-
-    .modal h2 {
-        font-size: 1.2rem; /* Ajustar el tamaño del título */
-    }
-
-    .modal p {
-        font-size: 0.9rem; /* Ajustar el tamaño del texto */
-    }
+.card img {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 .play-icon {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 50px;
-    height: 50px;
-    background-color: rgba(0, 0, 0, 0.6);
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    z-index: 2;
-    opacity: 0.9;
-    transition: opacity 0.3s ease;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 40px;
+  color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 0.3s ease;
 }
 
 .play-icon:hover {
-    opacity: 1;
+  transform: scale(1.2);
 }
 
-.play-icon svg {
-    fill: #fff;
-    width: 30px;
-    height: 30px;
+.card-info {
+  padding: 15px;
+  text-align: left;
 }
 
-/* Estilos para las tarjetas */
-.card {
-    position: relative; /* Necesario para posicionar el ícono de Play */
-    z-index: 1; /* Asegura que las tarjetas estén detrás de los modales */
+.card-info h3 {
+  font-size: 18px;
+  margin-bottom: 5px;
+  color: #333;
 }
 
-/* Estilos para el modal de detalles */
-#detailModal {
-    display: none;
-    position: fixed;
-    z-index: 1000; /* Prioridad alta para el modal de detalles */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+.card-info p {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
 }
 
-#detailModal .modal-content {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    width: 95%;
-    max-width: 1300px;
-    position: relative;
-    z-index: 1001; /* Asegura que el contenido del modal esté por encima del fondo */
+.card-info .details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #555;
 }
 
-#detailModal .close {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    font-size: 1.5rem;
-    color: #fff;
-    cursor: pointer;
-    z-index: 1002; /* Asegura que el botón de cierre esté por encima de todo */
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  overflow: auto;
 }
 
-#detailModal .close:hover {
-    color: red;
+.modal-content {
+  background-color: #fff;
+  margin: 5% auto;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 90%;
+  width: 800px;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Estilos para el modal del tráiler */
-#trailerModal {
-    display: none;
-    position: fixed;
-    z-index: 1000; /* Prioridad alta para el modal del tráiler */
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
+@media (min-width: 768px) {
+  .modal-content {
+      flex-direction: row;
+  }
 }
 
-#trailerModal .modal-content {
-    background-color: transparent;
-    margin: 10% auto;
-    padding: 20px;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 800px;
-    text-align: center;
-    z-index: 1001; /* Asegura que el contenido del modal esté por encima del fondo */
+.modal-left {
+  flex: 1;
+  margin-right: 20px;
 }
 
-/* Estilo del iframe para mantener la proporción widescreen (16:9) */
-#trailerModal iframe {
-    width: 100%; /* El iframe ocupa todo el ancho del contenedor */
-    aspect-ratio: 16 / 9; /* Proporción widescreen */
-    border: none;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para destacar el video */
+.modal-left img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
 }
 
-#trailerModal .close {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    font-size: 1.5rem;
-    color: #fff;
-    cursor: pointer;
-    z-index: 1002; /* Asegura que el botón de cierre esté por encima de todo */
+.modal-right {
+  flex: 2;
 }
 
-#trailerModal .close:hover {
-    color: red;
+.modal-right h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #333;
 }
 
-/* Contenedor de Referencias */
-.references-container {
-    background-color: #f9f9f9;
-    margin: 10px auto 20px auto; /* Margen superior reducido a 10px */
-    padding: 20px;
-    border-radius: 10px;
-    max-width: 1400px; /* Mismo ancho máximo que el modal-content */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para destacar */
-    overflow: hidden; /* Evitar desbordamientos */
-    display: flex; /* Usamos Flexbox para organizar el contenido */
-    flex-direction: column; /* Alinear elementos verticalmente */
-    align-items: center; /* Centrar el contenido horizontalmente */
-}
-
-.references-container h3 {
-    font-size: 1.2rem;
-    margin-bottom: 15px;
-    text-align: center;
-}
-
-.references-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* Columnas automáticas */
-    gap: 15px; /* Espacio entre las tarjetas */
-    width: 100%; /* Ocupar todo el ancho disponible */
-    justify-items: center; /* Centrar las tarjetas */
-}
-
-.references-grid .reference-card {
-    background-color: #fff;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-    cursor: pointer;
-    width: 100%;
-    max-width: 120px; /* Reducir el ancho máximo para acomodar más tarjetas */
-    text-align: center;
-}
-
-.references-grid img {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-
-.references-grid p {
-    font-size: 0.8rem; /* Reducir el tamaño del texto para evitar desbordamientos */
-    margin: 5px 0;
-    color: #333;
+.modal-right p {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #555;
 }
 
 .cast-container {
-    display: flex;
-    justify-content: center;
-    gap: 15px; /* Espacio entre las tarjetas */
-    overflow-x: auto; /* Desplazamiento horizontal si hay muchas tarjetas */
-    padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.actor-card {
-    width: 120px; /* Ancho de cada tarjeta */
-    text-align: center;
-    font-size: 14px;
-    flex-shrink: 0; /* Evitar que las tarjetas se contraigan */
+.cast-container .cast-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.actor-card img {
-    width: 100%;
-    height: 160px; /* Altura fija para las imágenes */
-    object-fit: cover; /* Ajustar la imagen dentro del contenedor */
-    border-radius: 8px; /* Bordes redondeados */
-    margin-bottom: 5px; /* Espacio entre la imagen y el nombre */
+.cast-container img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
 }
 
-.actor-card p {
-    margin: 0;
-    color: white;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: #000;
+}
+
+/* Modal de Tráiler */
+.trailer-modal-content {
+  position: relative;
+  width: 90%;
+  max-width: 800px;
+  height: 80vh;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #000;
+}
+
+#trailerIframe {
+  width: 100%;
+  height: 100%;
+}
+
+.close-trailer {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #fff;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.close-trailer:hover {
+  color: #ccc;
 }
