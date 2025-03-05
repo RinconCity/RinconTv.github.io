@@ -44,7 +44,7 @@ header {
 /* Contenedor principal */
 .container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 20px;
     padding-top: 60px; /* Espacio para evitar que las tarjetas queden detrás del encabezado */
     padding-bottom: 20px;
