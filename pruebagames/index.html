@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explorador de Juegos</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Juegos de PC</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <header>
-        <h1>Explorador de Juegos</h1>
-        <input type="text" id="searchInput" placeholder="Buscar juegos...">
-        <button id="searchButton">Buscar</button>
+        <h1>Juegos de PC</h1>
+        <input type="text" id="gameId" placeholder="Ingresa el ID del juego">
+        <button onclick="agregarJuego()">Agregar Juego</button>
     </header>
-    <main>
-        <div id="gamesContainer"></div>
-    </main>
-    <script src="script.js"></script>
+
+    <div id="juegos-container" class="juegos-container">
+        <!-- Los juegos se agregarán aquí dinámicamente -->
+    </div>
+
+    <script src="js/script.js"></script>
 </body>
 </html>
