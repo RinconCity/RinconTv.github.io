@@ -4,19 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juegos de PC</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
         <h1>Juegos de PC</h1>
-        <input type="text" id="gameId" placeholder="Ingresa el ID del juego">
-        <button onclick="agregarJuego()">Agregar Juego</button>
+        <input type="text" id="searchInput" placeholder="Buscar por nombre, género o requisitos..." />
     </header>
+    <main id="gameList"></main>
 
-    <div id="juegos-container" class="juegos-container">
-        <!-- Los juegos se agregarán aquí dinámicamente -->
-    </div>
-
-    <script src="js/script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
