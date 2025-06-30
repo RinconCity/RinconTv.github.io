@@ -1,0 +1,78 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #111;
+  color: white;
+  padding-top: 60px;
+}
+
+.fixed-top {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: #1c1c1f;
+  padding: 15px;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.search-bar input {
+  width: 100%;
+  max-width: 100%;
+  padding: 12px 15px;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: none;
+  outline: none;
+}
+
+main {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+.card {
+  background-color: #1f1f1f;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s ease;
+  padding: 10px;
+  text-align: center;
+}
+
+.card:hover {
+  transform: scale(1.03);
+}
+
+.card img {
+  width: 100%;
+  height: auto;
+  border-bottom: 1px solid #333;
+}
+
+.card h3 {
+  font-size: 1rem;
+  margin: 10px 0 5px;
+}
+
+.card p {
+  font-size: 0.85rem;
+  margin: 4px 0;
+  color: #ccc;
+}
+
+.info-serie {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #ccc;
+  margin-top: 5px;
+}

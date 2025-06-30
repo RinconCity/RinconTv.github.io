@@ -1,22 +1,33 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Películas y Series</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title></title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <header>
-        <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Buscar por título o artista..." />
-        </div>
-    </header>
 
-    <div class="container" id="movieContainer">
-        <!-- Ejemplo de Película -->
-        <!-- <div data-id="357400" data-type="movie"></div> -->
+  <!-- Filtro siempre visible -->
+  <div class="search-bar fixed-top">
+    <input 
+      type="text" 
+      id="searchInput" 
+      placeholder="Buscar película o serie..." 
+      oninput="filtrarResultados()"
+    />
+  </div>
+
+  <!-- Contenedor dinámico -->
+  <main id="resultados"></main>
+
+  <!-- IDs de TMDB (Películas y Series) -->
+  <div id="tmdbList" hidden>
+
+     <!-- Ejemplo de Película -->
         
+
+
 
 
 
@@ -27,7 +38,6 @@
         <div data-id="86605-well-intended-love" data-type="tv"></div>
         <div data-id="68349" data-type="tv"></div>
         <div data-id="200709" data-type="tv"></div>
-        <div data-id="230198" data-type="tv"></div>
         <div data-id="232766" data-type="tv"></div>
         <div data-id="106228" data-type="tv"></div>
         <div data-id="100595" data-type="tv"></div>
@@ -72,43 +82,19 @@
         <div data-id="38853-bad-couple" data-type="tv"></div>
         <div data-id="154825" data-type="tv"></div>
         <div data-id="46553-1997" data-type="tv"></div>
-       
-    </div>
+  </div>
 
-<!-- Modal para detalles -->
-<div id="detailModal" class="modal">
-    <div class="modal-content">
-        <!-- Ícono flotante para cerrar -->
-        <span class="close-icon">&times;</span>
-        <img id="modalImage" alt="Portada" />
-        <div class="info-container">
-            <h2 id="modalTitle"></h2>
-            <p><strong>Título Original:</strong> <span id="modalOriginalTitle"></span></p>
-            <p><strong>Título en Español:</strong> <span id="modalSpanishTitle"></span></p>
-            <p><strong>Sinopsis:</strong> <span id="modalOverview"></span></p>
-            <p><strong>Género:</strong> <span id="modalGenres"></span></p>
-            <p id="modalSeasonsEpisodes"></p>
-            <p><strong>Año de Lanzamiento:</strong> <span id="modalReleaseYear"></span></p>
-        </div>
-    </div>
-    <div id="modalCast" class="cast-container"></div>
+  <!-- IDs de OMDB (Películas y Series) -->
+  <div id="omdbList" hidden>
 
+    <!-- <div data-id="tt0468569" data-type="movie"></div> -->
 
-    <!-- Contenedor de Referencias -->
-    <div class="references-container">
-        <h3>Referencias</h3>
-        <div class="references-grid" id="referencesGrid"></div>
-    </div>
-</div>
+    <div data-id="tt30301176" data-type="tv"></div>
+  
+  
+    
+  </div>
 
-    <!-- Modal para el tráiler -->
-<div id="trailerModal" class="modal">
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <iframe id="trailerIframe" width="100%" height="400px" frameborder="0" allowfullscreen></iframe>
-    </div>
-</div>
-
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
