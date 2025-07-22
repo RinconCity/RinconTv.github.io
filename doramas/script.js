@@ -45,7 +45,7 @@ async function obtenerDatosTMDB(id, type = 'movie') {
     let res = await fetch(url);
     let data = await res.json();
 
-    // Verificamos si el título en español es diferente al original (si no, usamos inglés)
+    // Verificamos si el título en español es diferente al original
     const tituloEspañol = data.title || data.name;
     const tituloOriginal = data.original_title || data.original_name;
     
@@ -91,10 +91,11 @@ async function obtenerDatosTMDB(id, type = 'movie') {
   }
 }
 
-// Obtener datos desde OMDB (inglés por defecto)
+// Obtener datos desde OMDB (usando HTTPS para compatibilidad con móviles)
 async function obtenerDatosOMDB(id, type = 'movie') {
   try {
-    const res = await fetch(`http://www.omdbapi.com/?i=${id}&apikey=${apiKeyOMDB}`);
+    // Cambiado a HTTPS para funcionar en móviles
+    const res = await fetch(`https://www.omdbapi.com/?i=${id}&apikey=${apiKeyOMDB}`);
     const data = await res.json();
 
     if (data.Response === 'False') throw new Error("No se encontró contenido");
@@ -147,7 +148,7 @@ function mostrarResultados(pelisSeries) {
     card.className = 'card';
 
     let htmlContent = `
-      <img src="${item.poster}" alt="${item.titulo}">
+      <img src="${item.poster}" alt="${item.titulo}" loading="lazy">
       <h3>${item.titulo}</h3>
       <p><strong>Género:</strong> ${item.generos}</p>
       <p><strong>Año:</strong> ${item.anio}</p>

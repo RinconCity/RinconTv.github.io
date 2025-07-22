@@ -120,7 +120,7 @@ async function obtenerDatosTMDB(id, type = 'movie') {
   }
 }
 
-// Obtener datos desde OMDB con solución para móviles
+// Obtener datos desde OMDB asegurando títulos en Romaji
 async function obtenerDatosOMDB(id, type = 'movie') {
   try {
     // Usamos protocolo HTTPS para evitar bloqueos en móviles
@@ -143,6 +143,18 @@ async function obtenerDatosOMDB(id, type = 'movie') {
       console.log(`OMDB falló para ID ${id}, intentando con TMDB...`);
       return await obtenerDatosTMDB(id, type);
     }
+
+    // Función para asegurar que el título esté en Romaji
+    const asegurarRomaji = (titulo) => {
+      // Si el título ya está en caracteres latinos, lo dejamos igual
+      if (/^[a-zA-Z0-9\s\-.,:;'"!?]+$/.test(titulo)) {
+        return titulo;
+      }
+      // Si no, intentamos obtener el título en inglés desde TMDB
+      return obtenerTituloAlternativo(id, type);
+    };
+
+    const tituloRomaji = await asegurarRomaji(data.Title);
 
     if (type === "tv" || data.Type === "series") {
       let totalCapitulos = 0;
@@ -174,12 +186,12 @@ async function obtenerDatosOMDB(id, type = 'movie') {
 
       return {
         tipo: 'serie',
-        titulo: data.Title,
+        titulo: tituloRomaji,
         anio: data.Year.split('–')[0],
         generos: data.Genre || 'Sin género',
         actores: data.Actors || 'Desconocido',
         overview: data.Plot || '',
-        poster: data.Poster !== "N/A" ? data.Poster : 'https://via.placeholder.com/200x300?text=Sin+Imagen',
+        poster: data.Poster !== "N/A" ? data.Poster.replace('http://', 'https://') : 'https://via.placeholder.com/200x300?text=Sin+Imagen',
         temporadas: data.totalSeasons || 'Desconocido',
         capitulos: totalCapitulos || 'Desconocido',
         fuente: 'omdb'
@@ -188,12 +200,12 @@ async function obtenerDatosOMDB(id, type = 'movie') {
     } else {
       return {
         tipo: 'pelicula',
-        titulo: data.Title,
+        titulo: tituloRomaji,
         anio: data.Year.split('–')[0],
         generos: data.Genre || 'Sin género',
         actores: data.Actors || 'Desconocido',
         overview: data.Plot || '',
-        poster: data.Poster !== "N/A" ? data.Poster : 'https://via.placeholder.com/200x300?text=Sin+Imagen',
+        poster: data.Poster !== "N/A" ? data.Poster.replace('http://', 'https://') : 'https://via.placeholder.com/200x300?text=Sin+Imagen',
         fuente: 'omdb'
       };
     }
@@ -202,6 +214,20 @@ async function obtenerDatosOMDB(id, type = 'movie') {
     console.error(`Error OMDB (ID: ${id})`, error);
     // Si falla OMDB, intentamos obtener los datos de TMDB como respaldo
     return await obtenerDatosTMDB(id, type);
+  }
+}
+
+// Función auxiliar para obtener título alternativo desde TMDB
+async function obtenerTituloAlternativo(id, type) {
+  try {
+    const endpoint = type === 'tv' ? 'tv' : 'movie';
+    const url = `https://api.themoviedb.org/3/${endpoint}/${id}?api_key=${apiKeyTMDB}&language=en`;
+    const res = await fetch(url);
+    const data = await res.json();
+    return data.title || data.name || 'Título no disponible';
+  } catch (error) {
+    console.error('Error al obtener título alternativo:', error);
+    return 'Título no disponible';
   }
 }
 
@@ -230,14 +256,16 @@ function mostrarResultados(pelisSeries) {
     const card = document.createElement('div');
     card.className = 'card';
 
-    // Si el poster es de OMDB y usa HTTP, lo cambiamos a HTTPS
+    // Aseguramos que el poster use HTTPS
     let posterUrl = item.poster;
-    if (item.fuente === 'omdb' && posterUrl.startsWith('http://')) {
+    if (posterUrl && posterUrl.startsWith('http://')) {
       posterUrl = posterUrl.replace('http://', 'https://');
     }
 
     let htmlContent = `
-      <img src="${posterUrl}" alt="${item.titulo}" onerror="this.src='https://via.placeholder.com/200x300?text=Sin+Imagen'">
+      <img src="${posterUrl || 'https://via.placeholder.com/200x300?text=Sin+Imagen'}" 
+           alt="${item.titulo}" 
+           onerror="this.src='https://via.placeholder.com/200x300?text=Sin+Imagen'">
       <h3>${item.titulo}</h3>
       <p><strong>Género:</strong> ${item.generos}</p>
       <p><strong>Año:</strong> ${item.anio}</p>
