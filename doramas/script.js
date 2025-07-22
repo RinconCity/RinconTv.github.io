@@ -35,20 +35,32 @@ window.onload = async () => {
   }
 };
 
-// Obtener datos desde TMDB (con idioma forzado a inglés/español)
+// Obtener datos desde TMDB (español primero, inglés como fallback)
 async function obtenerDatosTMDB(id, type = 'movie') {
   try {
     const endpoint = type === 'tv' ? 'tv' : 'movie';
-    const url = `https://api.themoviedb.org/3/${endpoint}/${id}?api_key=${apiKeyTMDB}&language=en`; // Cambia 'en' por 'es' si prefieres español
-    const res = await fetch(url);
+    
+    // Primero intentamos en español
+    let url = `https://api.themoviedb.org/3/${endpoint}/${id}?api_key=${apiKeyTMDB}&language=es`;
+    let res = await fetch(url);
+    let data = await res.json();
 
-    if (!res.ok) throw new Error(`Error en TMDB: ${res.status}`);
+    // Verificamos si el título en español es diferente al original (si no, usamos inglés)
+    const tituloEspañol = data.title || data.name;
+    const tituloOriginal = data.original_title || data.original_name;
+    
+    if (!tituloEspañol || tituloEspañol === tituloOriginal) {
+      // Si no hay traducción válida, obtenemos datos en inglés
+      url = `https://api.themoviedb.org/3/${endpoint}/${id}?api_key=${apiKeyTMDB}&language=en`;
+      res = await fetch(url);
+      data = await res.json();
+    }
 
-    const data = await res.json();
-    const titulo = data.title || data.name; // Título en inglés/español
+    const titulo = data.title || data.name || 'Título no disponible';
 
-    // Obtener actores (también en inglés/español)
-    const castRes = await fetch(`https://api.themoviedb.org/3/${endpoint}/${id}/credits?api_key=${apiKeyTMDB}&language=en`);
+    // Obtenemos actores en español si están disponibles
+    const castUrl = `https://api.themoviedb.org/3/${endpoint}/${id}/credits?api_key=${apiKeyTMDB}&language=es`;
+    const castRes = await fetch(castUrl);
     const castData = await castRes.json();
     const actores = castData.cast?.slice(0, 5).map(a => a.name).join(', ') || 'Desconocido';
 
@@ -79,7 +91,7 @@ async function obtenerDatosTMDB(id, type = 'movie') {
   }
 }
 
-// Obtener datos desde OMDB (ya usa títulos en inglés por defecto)
+// Obtener datos desde OMDB (inglés por defecto)
 async function obtenerDatosOMDB(id, type = 'movie') {
   try {
     const res = await fetch(`http://www.omdbapi.com/?i=${id}&apikey=${apiKeyOMDB}`);
@@ -90,18 +102,18 @@ async function obtenerDatosOMDB(id, type = 'movie') {
     if (type === "tv" || data.Type === "series") {
       return {
         tipo: 'serie',
-        titulo: data.Title, // Título en inglés
+        titulo: data.Title,
         anio: data.Year.split('–')[0],
         generos: data.Genre || 'Sin género',
         actores: data.Actors || 'Desconocido',
         poster: data.Poster !== "N/A" ? data.Poster : 'https://via.placeholder.com/200x300?text=Sin+Imagen',
         temporadas: data.totalSeasons || 'Desconocido',
-        capitulos: 'N/A' // OMDB no proporciona este dato directamente
+        capitulos: 'N/A'
       };
     } else {
       return {
         tipo: 'pelicula',
-        titulo: data.Title, // Título en inglés
+        titulo: data.Title,
         anio: data.Year.split('–')[0],
         generos: data.Genre || 'Sin género',
         actores: data.Actors || 'Desconocido',
