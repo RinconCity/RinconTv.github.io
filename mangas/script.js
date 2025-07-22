@@ -41,45 +41,56 @@ window.onload = async () => {
   }
 };
 
-// Obtener datos desde TMDB
+// Obtener datos desde TMDB con título en Romaji
 async function obtenerDatosTMDB(id, type = 'movie') {
   try {
     const endpoint = type === 'tv' ? 'tv' : 'movie';
-    const url = `https://api.themoviedb.org/3/${endpoint}/${id}?api_key=${apiKeyTMDB}&language=es`;
-    const res = await fetch(url);
+    
+    // Primero obtenemos los datos en inglés para el título internacional
+    const urlEn = `https://api.themoviedb.org/3/${endpoint}/${id}?api_key=${apiKeyTMDB}&language=en`;
+    const resEn = await fetch(urlEn);
+    
+    if (!resEn.ok) throw new Error(`Error en TMDB (EN): ${resEn.status}`);
+    
+    const dataEn = await resEn.json();
+    const tituloRomaji = dataEn.title || dataEn.name || 'Desconocido';
 
-    if (!res.ok) throw new Error(`Error en TMDB: ${res.status}`);
+    // Luego obtenemos el resto de los datos en español
+    const urlEs = `https://api.themoviedb.org/3/${endpoint}/${id}?api_key=${apiKeyTMDB}&language=es`;
+    const resEs = await fetch(urlEs);
 
-    const data = await res.json();
+    if (!resEs.ok) throw new Error(`Error en TMDB (ES): ${resEs.status}`);
 
-    if (!data.title && !data.name) throw new Error("No se encontró contenido");
+    const dataEs = await resEs.json();
+
+    if (!dataEs.title && !dataEs.name) throw new Error("No se encontró contenido");
 
     // Obtenemos actores
     const castRes = await fetch(`https://api.themoviedb.org/3/${endpoint}/${id}/credits?api_key=${apiKeyTMDB}&language=es`);
     const castData = await castRes.json();
     const actores = castData.cast?.slice(0, 5).map(a => a.name).join(', ') || 'Desconocido';
 
-    if (data.seasons) {
+    if (dataEs.seasons) {
       return {
         tipo: 'serie',
-        titulo: data.name,
-        anio: data.first_air_date ? data.first_air_date.split('-')[0] : 'Desconocido',
-        generos: data.genres.map(g => g.name).join(', ') || 'Sin género',
+        titulo: tituloRomaji, // Usamos el título en inglés (Romaji para anime)
+        anio: dataEs.first_air_date ? dataEs.first_air_date.split('-')[0] : 'Desconocido',
+        generos: dataEs.genres.map(g => g.name).join(', ') || 'Sin género',
         actores,
-        overview: data.overview || '',
-        poster: data.poster_path ? `https://image.tmdb.org/t/p/w500${data.poster_path}` : 'https://via.placeholder.com/200x300?text=Sin+Imagen',
-        temporadas: data.number_of_seasons,
-        capitulos: data.number_of_episodes
+        overview: dataEs.overview || '',
+        poster: dataEs.poster_path ? `https://image.tmdb.org/t/p/w500${dataEs.poster_path}` : 'https://via.placeholder.com/200x300?text=Sin+Imagen',
+        temporadas: dataEs.number_of_seasons,
+        capitulos: dataEs.number_of_episodes
       };
     } else {
       return {
         tipo: 'pelicula',
-        titulo: data.title,
-        anio: data.release_date ? data.release_date.split('-')[0] : 'Desconocido',
-        generos: data.genres.map(g => g.name).join(', ') || 'Sin género',
+        titulo: tituloRomaji, // Usamos el título en inglés (Romaji para anime)
+        anio: dataEs.release_date ? dataEs.release_date.split('-')[0] : 'Desconocido',
+        generos: dataEs.genres.map(g => g.name).join(', ') || 'Sin género',
         actores,
-        overview: data.overview || '',
-        poster: data.poster_path ? `https://image.tmdb.org/t/p/w500${data.poster_path}` : 'https://via.placeholder.com/200x300?text=Sin+Imagen'
+        overview: dataEs.overview || '',
+        poster: dataEs.poster_path ? `https://image.tmdb.org/t/p/w500${dataEs.poster_path}` : 'https://via.placeholder.com/200x300?text=Sin+Imagen'
       };
     }
 
@@ -89,7 +100,7 @@ async function obtenerDatosTMDB(id, type = 'movie') {
   }
 }
 
-// Obtener datos desde OMDB
+// Obtener datos desde OMDB (ya suelen venir en Romaji)
 async function obtenerDatosOMDB(id, type = 'movie') {
   try {
     const res = await fetch(`http://www.omdbapi.com/?i=${id}&apikey=${apiKeyOMDB}`);
