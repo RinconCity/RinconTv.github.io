@@ -120,7 +120,7 @@ async function obtenerDatosTMDB(id, type = 'movie') {
   }
 }
 
-// Obtener datos desde OMDB asegurando títulos en Romaji
+// Obtener datos desde OMDB usando títulos originales de IMDB
 async function obtenerDatosOMDB(id, type = 'movie') {
   try {
     // Usamos protocolo HTTPS para evitar bloqueos en móviles
@@ -144,17 +144,8 @@ async function obtenerDatosOMDB(id, type = 'movie') {
       return await obtenerDatosTMDB(id, type);
     }
 
-    // Función para asegurar que el título esté en Romaji
-    const asegurarRomaji = (titulo) => {
-      // Si el título ya está en caracteres latinos, lo dejamos igual
-      if (/^[a-zA-Z0-9\s\-.,:;'"!?]+$/.test(titulo)) {
-        return titulo;
-      }
-      // Si no, intentamos obtener el título en inglés desde TMDB
-      return obtenerTituloAlternativo(id, type);
-    };
-
-    const tituloRomaji = await asegurarRomaji(data.Title);
+    // Usamos directamente el título que proporciona OMDB (que es el mismo que muestra IMDB)
+    const tituloOriginal = data.Title;
 
     if (type === "tv" || data.Type === "series") {
       let totalCapitulos = 0;
@@ -186,7 +177,7 @@ async function obtenerDatosOMDB(id, type = 'movie') {
 
       return {
         tipo: 'serie',
-        titulo: tituloRomaji,
+        titulo: tituloOriginal,
         anio: data.Year.split('–')[0],
         generos: data.Genre || 'Sin género',
         actores: data.Actors || 'Desconocido',
@@ -200,7 +191,7 @@ async function obtenerDatosOMDB(id, type = 'movie') {
     } else {
       return {
         tipo: 'pelicula',
-        titulo: tituloRomaji,
+        titulo: tituloOriginal,
         anio: data.Year.split('–')[0],
         generos: data.Genre || 'Sin género',
         actores: data.Actors || 'Desconocido',
@@ -214,20 +205,6 @@ async function obtenerDatosOMDB(id, type = 'movie') {
     console.error(`Error OMDB (ID: ${id})`, error);
     // Si falla OMDB, intentamos obtener los datos de TMDB como respaldo
     return await obtenerDatosTMDB(id, type);
-  }
-}
-
-// Función auxiliar para obtener título alternativo desde TMDB
-async function obtenerTituloAlternativo(id, type) {
-  try {
-    const endpoint = type === 'tv' ? 'tv' : 'movie';
-    const url = `https://api.themoviedb.org/3/${endpoint}/${id}?api_key=${apiKeyTMDB}&language=en`;
-    const res = await fetch(url);
-    const data = await res.json();
-    return data.title || data.name || 'Título no disponible';
-  } catch (error) {
-    console.error('Error al obtener título alternativo:', error);
-    return 'Título no disponible';
   }
 }
 
