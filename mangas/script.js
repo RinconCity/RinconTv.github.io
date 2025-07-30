@@ -28,189 +28,103 @@ window.onload = async () => {
   try {
     const resultados = await Promise.all(promises);
     todasLasTarjetas = resultados.filter(Boolean);
-
-    if (todasLasTarjetas.length === 0) {
-      resultadosDiv.innerHTML = '<p>No hay resultados.</p>';
-    } else {
-      mostrarResultados(todasLasTarjetas);
-    }
+    mostrarResultados(todasLasTarjetas);
   } catch (error) {
     console.error("Error general:", error);
-    resultadosDiv.innerHTML = '<p>Error al cargar los datos. Revisa la consola.</p>';
+    resultadosDiv.innerHTML = '<p>Error al cargar los datos.</p>';
   }
 };
 
-// Obtener datos desde TMDB con prioridad a títulos en Romaji
+// Obtener datos desde TMDB (español primero, inglés como fallback)
 async function obtenerDatosTMDB(id, type = 'movie') {
   try {
     const endpoint = type === 'tv' ? 'tv' : 'movie';
     
-    // Obtenemos los datos en japonés para el título original
-    const urlJa = `https://api.themoviedb.org/3/${endpoint}/${id}?api_key=${apiKeyTMDB}&language=ja`;
-    const resJa = await fetch(urlJa);
-    
-    if (!resJa.ok) throw new Error(`Error en TMDB (JA): ${resJa.status}`);
-    
-    const dataJa = await resJa.json();
-    const tituloOriginal = dataJa.original_title || dataJa.original_name;
-    
-    // Obtenemos los datos en inglés como alternativa
-    const urlEn = `https://api.themoviedb.org/3/${endpoint}/${id}?api_key=${apiKeyTMDB}&language=en`;
-    const resEn = await fetch(urlEn);
-    const dataEn = await resEn.json();
-    const tituloEn = dataEn.title || dataEn.name;
-    
-    // Obtenemos los datos en español para el resto de la información
-    const urlEs = `https://api.themoviedb.org/3/${endpoint}/${id}?api_key=${apiKeyTMDB}&language=es`;
-    const resEs = await fetch(urlEs);
+    // Primero intentamos en español
+    let url = `https://api.themoviedb.org/3/${endpoint}/${id}?api_key=${apiKeyTMDB}&language=es`;
+    let res = await fetch(url);
+    let data = await res.json();
 
-    if (!resEs.ok) throw new Error(`Error en TMDB (ES): ${resEs.status}`);
+    // Verificamos si el título en español es diferente al original
+    const tituloEspañol = data.title || data.name;
+    const tituloOriginal = data.original_title || data.original_name;
+    
+    if (!tituloEspañol || tituloEspañol === tituloOriginal) {
+      // Si no hay traducción válida, obtenemos datos en inglés
+      url = `https://api.themoviedb.org/3/${endpoint}/${id}?api_key=${apiKeyTMDB}&language=en`;
+      res = await fetch(url);
+      data = await res.json();
+    }
 
-    const dataEs = await resEs.json();
+    const titulo = data.title || data.name || 'Título no disponible';
 
-    if (!dataEs.title && !dataEs.name) throw new Error("No se encontró contenido");
-
-    // Obtenemos actores
-    const castRes = await fetch(`https://api.themoviedb.org/3/${endpoint}/${id}/credits?api_key=${apiKeyTMDB}&language=es`);
+    // Obtenemos actores en español si están disponibles
+    const castUrl = `https://api.themoviedb.org/3/${endpoint}/${id}/credits?api_key=${apiKeyTMDB}&language=es`;
+    const castRes = await fetch(castUrl);
     const castData = await castRes.json();
     const actores = castData.cast?.slice(0, 5).map(a => a.name).join(', ') || 'Desconocido';
 
-    // Determinamos el título a mostrar (priorizando Romaji)
-    let tituloAMostrar;
-    
-    if (tituloOriginal && esRomaji(tituloOriginal)) {
-      tituloAMostrar = tituloOriginal;
-    } 
-    else if (tituloEn) {
-      tituloAMostrar = tituloEn;
-    }
-    else {
-      tituloAMostrar = dataEs.title || dataEs.name;
-    }
-
-    if (dataEs.seasons) {
+    if (data.seasons) {
       return {
         tipo: 'serie',
-        titulo: tituloAMostrar,
-        anio: dataEs.first_air_date ? dataEs.first_air_date.split('-')[0] : 'Desconocido',
-        generos: dataEs.genres.map(g => g.name).join(', ') || 'Sin género',
-        actores,
-        overview: dataEs.overview || '',
-        poster: dataEs.poster_path ? `https://image.tmdb.org/t/p/w500${dataEs.poster_path}` : 'https://via.placeholder.com/200x300?text=Sin+Imagen',
-        temporadas: dataEs.number_of_seasons,
-        capitulos: dataEs.number_of_episodes,
-        fuente: 'tmdb'
+        titulo: titulo,
+        anio: data.first_air_date?.split('-')[0] || 'Desconocido',
+        generos: data.genres?.map(g => g.name).join(', ') || 'Sin género',
+        actores: actores,
+        poster: data.poster_path ? `https://image.tmdb.org/t/p/w500${data.poster_path}` : 'https://via.placeholder.com/200x300?text=Sin+Imagen',
+        temporadas: data.number_of_seasons,
+        capitulos: data.number_of_episodes
       };
     } else {
       return {
         tipo: 'pelicula',
-        titulo: tituloAMostrar,
-        anio: dataEs.release_date ? dataEs.release_date.split('-')[0] : 'Desconocido',
-        generos: dataEs.genres.map(g => g.name).join(', ') || 'Sin género',
-        actores,
-        overview: dataEs.overview || '',
-        poster: dataEs.poster_path ? `https://image.tmdb.org/t/p/w500${dataEs.poster_path}` : 'https://via.placeholder.com/200x300?text=Sin+Imagen',
-        fuente: 'tmdb'
+        titulo: titulo,
+        anio: data.release_date?.split('-')[0] || 'Desconocido',
+        generos: data.genres?.map(g => g.name).join(', ') || 'Sin género',
+        actores: actores,
+        poster: data.poster_path ? `https://image.tmdb.org/t/p/w500${data.poster_path}` : 'https://via.placeholder.com/200x300?text=Sin+Imagen'
       };
     }
-
   } catch (error) {
     console.error(`Error TMDB (ID: ${id})`, error);
     return null;
   }
 }
 
-// Obtener datos desde OMDB usando títulos originales de IMDB
+// Obtener datos desde OMDB (usando HTTPS para compatibilidad con móviles)
 async function obtenerDatosOMDB(id, type = 'movie') {
   try {
-    // Usamos protocolo HTTPS para evitar bloqueos en móviles
-    const url = `https://www.omdbapi.com/?i=${id}&apikey=${apiKeyOMDB}`;
-    
-    // Implementamos un timeout para evitar esperas infinitas
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
-    
-    const res = await fetch(url, {
-      signal: controller.signal
-    });
-    
-    clearTimeout(timeoutId);
-    
+    // Cambiado a HTTPS para funcionar en móviles
+    const res = await fetch(`https://www.omdbapi.com/?i=${id}&apikey=${apiKeyOMDB}`);
     const data = await res.json();
 
-    if (data.Response === 'False') {
-      // Si falla OMDB, intentamos obtener los datos de TMDB como respaldo
-      console.log(`OMDB falló para ID ${id}, intentando con TMDB...`);
-      return await obtenerDatosTMDB(id, type);
-    }
-
-    // Usamos directamente el título que proporciona OMDB (que es el mismo que muestra IMDB)
-    const tituloOriginal = data.Title;
+    if (data.Response === 'False') throw new Error("No se encontró contenido");
 
     if (type === "tv" || data.Type === "series") {
-      let totalCapitulos = 0;
-      const totalTemporadas = parseInt(data.totalSeasons) || 0;
-
-      // Limitamos a 3 temporadas máximo para no hacer demasiadas peticiones
-      const temporadasAConsultar = Math.min(totalTemporadas, 3);
-      
-      for (let i = 1; i <= temporadasAConsultar; i++) {
-        try {
-          const seasonUrl = `https://www.omdbapi.com/?i=${id}&season=${i}&apikey=${apiKeyOMDB}`;
-          const seasonRes = await fetch(seasonUrl, {
-            signal: controller.signal
-          });
-          const seasonData = await seasonRes.json();
-          if (seasonData.Episodes && Array.isArray(seasonData.Episodes)) {
-            totalCapitulos += seasonData.Episodes.length;
-          }
-        } catch (error) {
-          console.error(`Error al obtener temporada ${i}`, error);
-        }
-      }
-
-      // Si no consultamos todas las temporadas, estimamos los capítulos
-      if (temporadasAConsultar < totalTemporadas) {
-        const promedioPorTemp = totalCapitulos / temporadasAConsultar;
-        totalCapitulos = Math.round(promedioPorTemp * totalTemporadas);
-      }
-
       return {
         tipo: 'serie',
-        titulo: tituloOriginal,
+        titulo: data.Title,
         anio: data.Year.split('–')[0],
         generos: data.Genre || 'Sin género',
         actores: data.Actors || 'Desconocido',
-        overview: data.Plot || '',
-        poster: data.Poster !== "N/A" ? data.Poster.replace('http://', 'https://') : 'https://via.placeholder.com/200x300?text=Sin+Imagen',
+        poster: data.Poster !== "N/A" ? data.Poster : 'https://via.placeholder.com/200x300?text=Sin+Imagen',
         temporadas: data.totalSeasons || 'Desconocido',
-        capitulos: totalCapitulos || 'Desconocido',
-        fuente: 'omdb'
+        capitulos: 'N/A'
       };
-
     } else {
       return {
         tipo: 'pelicula',
-        titulo: tituloOriginal,
+        titulo: data.Title,
         anio: data.Year.split('–')[0],
         generos: data.Genre || 'Sin género',
         actores: data.Actors || 'Desconocido',
-        overview: data.Plot || '',
-        poster: data.Poster !== "N/A" ? data.Poster.replace('http://', 'https://') : 'https://via.placeholder.com/200x300?text=Sin+Imagen',
-        fuente: 'omdb'
+        poster: data.Poster !== "N/A" ? data.Poster : 'https://via.placeholder.com/200x300?text=Sin+Imagen'
       };
     }
-
   } catch (error) {
     console.error(`Error OMDB (ID: ${id})`, error);
-    // Si falla OMDB, intentamos obtener los datos de TMDB como respaldo
-    return await obtenerDatosTMDB(id, type);
+    return null;
   }
-}
-
-// Función para detectar si un texto está en Romaji (alfabeto latino)
-function esRomaji(texto) {
-  return /^[a-zA-Z0-9\s\-.,:;'"!?]+$/.test(texto);
 }
 
 // Mostrar tarjetas ordenadas por año
@@ -233,16 +147,8 @@ function mostrarResultados(pelisSeries) {
     const card = document.createElement('div');
     card.className = 'card';
 
-    // Aseguramos que el poster use HTTPS
-    let posterUrl = item.poster;
-    if (posterUrl && posterUrl.startsWith('http://')) {
-      posterUrl = posterUrl.replace('http://', 'https://');
-    }
-
     let htmlContent = `
-      <img src="${posterUrl || 'https://via.placeholder.com/200x300?text=Sin+Imagen'}" 
-           alt="${item.titulo}" 
-           onerror="this.src='https://via.placeholder.com/200x300?text=Sin+Imagen'">
+      <img src="${item.poster}" alt="${item.titulo}" loading="lazy">
       <h3>${item.titulo}</h3>
       <p><strong>Género:</strong> ${item.generos}</p>
       <p><strong>Año:</strong> ${item.anio}</p>
@@ -262,7 +168,7 @@ function mostrarResultados(pelisSeries) {
   });
 }
 
-// Filtrar resultados desde datos completos de la API
+// Filtrar resultados
 function filtrarResultados() {
   const query = document.getElementById('searchInput').value.trim().toLowerCase();
   if (!query) {
@@ -275,8 +181,7 @@ function filtrarResultados() {
       ${item.titulo} 
       ${item.generos} 
       ${item.anio} 
-      ${item.actores} 
-      ${item.overview}
+      ${item.actores}
     `.toLowerCase();
     return textoCompleto.includes(query);
   });
