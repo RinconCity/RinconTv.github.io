@@ -6,8 +6,8 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #111;
-    color: white;
+    background-color: #f4f4f4;
+    color: #333;
     padding: 20px;
 }
 
@@ -16,8 +16,8 @@ header {
     top: 0;
     left: 0;
     width: 100%;
-    background-color: #1c1c1f; /* Fondo blanco */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Sombra para destacar */
+    background-color: #fff; /* Fondo blanco */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para destacar */
     z-index: 1000; /* Asegura que esté por encima de otros elementos */
     padding: 10px 20px; /* Espaciado interno */
 }
@@ -52,10 +52,10 @@ header {
 
 /* Estilos para las tarjetas */
 .container > div {
-    background-color: #1f1f1f;
+    background-color: #fff;
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
     cursor: pointer;
 }
@@ -82,7 +82,7 @@ header {
 
 .info p {
     font-size: 0.9rem;
-    color: #ccc;
+    color: #666;
 }
 
 /* Estilos generales para todos los modales */
@@ -99,7 +99,7 @@ header {
 }
 
 .modal .modal-content {
-    background-color: #1f1f1f;
+    background-color: #fff;
     margin: 20px auto; /* Margen superior e inferior */
     padding: 20px;
     border-radius: 10px;
@@ -313,7 +313,7 @@ header {
 }
 
 #detailModal .modal-content {
-    background-color: #1f1f1f;
+    background-color: #fff;
     padding: 20px;
     border-radius: 10px;
     width: 95%;
@@ -327,7 +327,7 @@ header {
     right: 10px;
     top: 10px;
     font-size: 1.5rem;
-    color: #1f1f1f;
+    color: #fff;
     cursor: pointer;
     z-index: 1002; /* Asegura que el botón de cierre esté por encima de todo */
 }
@@ -385,7 +385,7 @@ header {
 
 /* Contenedor de Referencias */
 .references-container {
-    background-color: #1f1f1f;
+    background-color: #f9f9f9;
     margin: 10px auto 20px auto; /* Margen superior reducido a 10px */
     padding: 20px;
     border-radius: 10px;
@@ -412,8 +412,10 @@ header {
 }
 
 .references-grid .reference-card {
-    background-color: #1f1f1f;
+    background-color: #fff;
+    border-radius: 10px;
     overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
     cursor: pointer;
     width: 100%;
@@ -430,7 +432,7 @@ header {
 .references-grid p {
     font-size: 0.8rem; /* Reducir el tamaño del texto para evitar desbordamientos */
     margin: 5px 0;
-    color: white;
+    color: #333;
 }
 
 .cast-container {
