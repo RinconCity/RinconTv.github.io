@@ -7,26 +7,52 @@ const closeModalButton = document.querySelector(".close");
 
 // Función para cargar trailers de TMDB
 async function fetchTrailers(id, type) {
-    const url = `https://api.themoviedb.org/3/${type}/${id}/videos?api_key=${apiKey}`;
-    const response = await fetch(url);
-    const data = await response.json();
-    return data.results.find((video) => video.type === "Trailer" && video.site === "YouTube");
+    try {
+        const url = `https://api.themoviedb.org/3/${type}/${id}/videos?api_key=${apiKey}`;
+        const response = await fetch(url);
+        
+        if (!response.ok) {
+            throw new Error(`Error en la respuesta de la API para trailers ID ${id}`);
+        }
+        
+        const data = await response.json();
+        return data.results.find((video) => video.type === "Trailer" && video.site === "YouTube");
+    } catch (error) {
+        console.error(`Error en fetchTrailers para ID ${id}:`, error);
+        return null;
+    }
 }
 
 // Función para cargar datos de TMDB (incluyendo créditos)
 async function fetchData(id, type) {
-    const url = `https://api.themoviedb.org/3/${type}/${id}?api_key=${apiKey}&language=es-ES`;
-    const creditsUrl = `https://api.themoviedb.org/3/${type}/${id}/credits?api_key=${apiKey}`;
+    try {
+        const url = `https://api.themoviedb.org/3/${type}/${id}?api_key=${apiKey}&language=es-ES`;
+        const creditsUrl = `https://api.themoviedb.org/3/${type}/${id}/credits?api_key=${apiKey}`;
 
-    // Obtener datos principales y créditos simultáneamente
-    const [dataResponse, creditsResponse] = await Promise.all([fetch(url), fetch(creditsUrl)]);
-    const data = await dataResponse.json();
-    const creditsData = await creditsResponse.json();
+        // Obtener datos principales y créditos simultáneamente
+        const [dataResponse, creditsResponse] = await Promise.all([fetch(url), fetch(creditsUrl)]);
+        
+        if (!dataResponse.ok || !creditsResponse.ok) {
+            throw new Error(`Error en la respuesta de la API para ID ${id}`);
+        }
+        
+        const data = await dataResponse.json();
+        const creditsData = await creditsResponse.json();
 
-    // Agregar los actores al objeto de datos
-    data.cast = creditsData.cast.map((actor) => actor.name);
+        // Verificar si la respuesta tiene error
+        if (data.success === false) {
+            throw new Error(data.status_message || `Error en datos para ID ${id}`);
+        }
 
-    return data;
+        // Agregar los actores al objeto de datos
+        data.cast = creditsData.cast.map((actor) => actor.name);
+
+        return data;
+        
+    } catch (error) {
+        console.error(`Error en fetchData para ID ${id}:`, error);
+        throw error; // Re-lanzar el error para manejarlo arriba
+    }
 }
 
 // Función para renderizar tarjetas
@@ -40,8 +66,11 @@ function renderCard(data, type) {
     card.dataset.fullInfo = JSON.stringify(data);
 
     const image = document.createElement("img");
-    image.src = `https://image.tmdb.org/t/p/w500${data.poster_path}`;
+    image.src = data.poster_path ? `https://image.tmdb.org/t/p/w500${data.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Image';
     image.alt = data.title || data.name;
+    image.onerror = function() {
+        this.src = 'https://via.placeholder.com/500x750?text=Error+Loading';
+    };
 
     const playIcon = document.createElement("div");
     playIcon.classList.add("play-icon");
@@ -52,17 +81,17 @@ function renderCard(data, type) {
     info.classList.add("info");
 
     const title = document.createElement("h3");
-    title.textContent = data.title || data.name;
+    title.textContent = data.title || data.name || "Título no disponible";
 
     const originalTitle = document.createElement("p");
-    originalTitle.textContent = `Título Original: ${data.original_title || data.original_name}`;
+    originalTitle.textContent = `Título Original: ${data.original_title || data.original_name || "N/A"}`;
 
     info.appendChild(title);
     info.appendChild(originalTitle);
 
     if (type === "tv") {
         const seasonsEpisodes = document.createElement("p");
-        seasonsEpisodes.textContent = `Temp: ${data.number_of_seasons} | Cap: ${data.number_of_episodes}`;
+        seasonsEpisodes.textContent = `Temp: ${data.number_of_seasons || 0} | Cap: ${data.number_of_episodes || 0}`;
         info.appendChild(seasonsEpisodes);
     }
 
@@ -119,44 +148,69 @@ window.addEventListener("click", (event) => {
     }
 });
 
-// Cargar todas las tarjetas iniciales
-document.querySelectorAll("#movieContainer > div").forEach(async (item) => {
-    const id = item.dataset.id;
-    const type = item.dataset.type;
-    const data = await fetchData(id, type);
-    const card = renderCard(data, type);
-    item.replaceWith(card);
-});
-
-// Función para cargar todas las tarjetas iniciales y ordenarlas por fecha
+// Función para cargar y ordenar todas las tarjetas
 async function loadAndSortCards() {
-    const items = Array.from(document.querySelectorAll("#movieContainer > div"));
+    try {
+        const items = Array.from(document.querySelectorAll("#movieContainer > div"));
+        
+        // Mostrar estado de carga
+        movieContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: #666;">Cargando series...</div>';
+        
+        // Obtener datos completos para cada tarjeta con manejo de errores
+        const cardsWithData = await Promise.all(
+            items.map(async (item) => {
+                try {
+                    const id = item.dataset.id;
+                    const type = item.dataset.type;
+                    const data = await fetchData(id, type);
+                    return { data, type, success: true };
+                } catch (error) {
+                    console.error(`Error cargando datos para ID ${item.dataset.id}:`, error);
+                    return { data: null, type: null, success: false };
+                }
+            })
+        );
 
-    // Obtener datos completos para cada tarjeta
-    const cardsWithData = await Promise.all(
-        items.map(async (item) => {
-            const id = item.dataset.id;
-            const type = item.dataset.type;
-            const data = await fetchData(id, type);
-            return { data, type };
-        })
-    );
+        // Filtrar solo las tarjetas que se cargaron correctamente
+        const successfulCards = cardsWithData.filter(card => card.success && card.data);
+        
+        // Ordenar las tarjetas por fecha (de más reciente a más antigua)
+        successfulCards.sort((a, b) => {
+            const getValidDate = (data) => {
+                const dateStr = data.release_date || data.first_air_date;
+                if (!dateStr) return new Date(0); // Fecha muy antigua si no hay fecha
+                const date = new Date(dateStr);
+                return isNaN(date.getTime()) ? new Date(0) : date;
+            };
 
-    // Ordenar las tarjetas por fecha (de más reciente a más antigua)
-    cardsWithData.sort((a, b) => {
-        const dateA = a.data.release_date || a.data.first_air_date || "0000-00-00";
-        const dateB = b.data.release_date || b.data.first_air_date || "0000-00-00";
-        return new Date(dateB) - new Date(dateA); // Orden descendente
-    });
+            const dateA = getValidDate(a.data);
+            const dateB = getValidDate(b.data);
+            
+            return dateB - dateA; // Orden descendente (más reciente primero)
+        });
 
-    // Limpiar el contenedor antes de agregar las tarjetas ordenadas
-    movieContainer.innerHTML = "";
+        // Limpiar el contenedor antes de agregar las tarjetas ordenadas
+        movieContainer.innerHTML = "";
 
-    // Renderizar las tarjetas en el nuevo orden
-    cardsWithData.forEach(({ data, type }) => {
-        const card = renderCard(data, type);
-        movieContainer.appendChild(card);
-    });
+        // Renderizar las tarjetas en el nuevo orden
+        successfulCards.forEach(({ data, type }) => {
+            if (data) {
+                const card = renderCard(data, type);
+                movieContainer.appendChild(card);
+            }
+        });
+
+        console.log(`Cargadas ${successfulCards.length} de ${items.length} series`);
+
+        // Si no se cargó ninguna serie, mostrar mensaje
+        if (successfulCards.length === 0) {
+            movieContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: #666;">No se pudieron cargar las series. Verifica tu conexión a internet.</div>';
+        }
+
+    } catch (error) {
+        console.error("Error en loadAndSortCards:", error);
+        movieContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: #ff0000;">Error al cargar las series. Intenta recargar la página.</div>';
+    }
 }
 
 // Llamar a la función para cargar y ordenar las tarjetas al iniciar
@@ -203,10 +257,10 @@ document.getElementById("searchInput").addEventListener("input", () => {
 // Función para abrir el modal de detalles
 function openModal(data, type) {
     // Asignar valores básicos
-    document.getElementById("modalTitle").textContent = data.title || data.name;
-    document.getElementById("modalImage").src = `https://image.tmdb.org/t/p/w500${data.poster_path}`;
-    document.getElementById("modalOriginalTitle").textContent = data.original_title || data.original_name;
-    document.getElementById("modalSpanishTitle").textContent = data.title || data.name;
+    document.getElementById("modalTitle").textContent = data.title || data.name || "Título no disponible";
+    document.getElementById("modalImage").src = data.poster_path ? `https://image.tmdb.org/t/p/w500${data.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Image';
+    document.getElementById("modalOriginalTitle").textContent = data.original_title || data.original_name || "N/A";
+    document.getElementById("modalSpanishTitle").textContent = data.title || data.name || "N/A";
     document.getElementById("modalOverview").textContent = data.overview || "Sin sinopsis disponible.";
     document.getElementById("modalReleaseYear").textContent = data.release_date
         ? new Date(data.release_date).getFullYear()
@@ -221,7 +275,7 @@ function openModal(data, type) {
     // Mostrar temporadas y episodios si es una serie
     const seasonsEpisodes = document.getElementById("modalSeasonsEpisodes");
     if (type === "tv") {
-        seasonsEpisodes.textContent = `Temporadas: ${data.number_of_seasons} | Capítulos: ${data.number_of_episodes}`;
+        seasonsEpisodes.textContent = `Temporadas: ${data.number_of_seasons || 0} | Capítulos: ${data.number_of_episodes || 0}`;
     } else {
         seasonsEpisodes.textContent = "";
     }
@@ -248,6 +302,9 @@ function openModal(data, type) {
                     ? `https://image.tmdb.org/t/p/w185${actor.profile_path}`
                     : "https://via.placeholder.com/120x160?text=No+Image"; // Imagen por defecto si no hay foto
                 actorImage.alt = actor.name;
+                actorImage.onerror = function() {
+                    this.src = "https://via.placeholder.com/120x160?text=Error+Loading";
+                };
 
                 // Nombre del actor
                 const actorName = document.createElement("p");
@@ -316,8 +373,11 @@ function loadReferences(currentData) {
         referenceCard.classList.add("reference-card");
 
         const image = document.createElement("img");
-        image.src = `https://image.tmdb.org/t/p/w500${fullInfo.poster_path}`;
+        image.src = fullInfo.poster_path ? `https://image.tmdb.org/t/p/w500${fullInfo.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Image';
         image.alt = fullInfo.title || fullInfo.name;
+        image.onerror = function() {
+            this.src = 'https://via.placeholder.com/500x750?text=Error+Loading';
+        };
 
         const title = document.createElement("p");
         title.textContent = fullInfo.title || fullInfo.name;
